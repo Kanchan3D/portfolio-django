@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'assets/icons/favicon.png' %}">
+    
+    <!-- Custom CSS -->
+    <style>
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-in-out;
+        }
+        
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-in-out;
+        }
+        
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Custom hover effects */
+        .hover-scale {
+            transition: transform 0.3s ease;
+        }
+        
+        .hover-scale:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-white text-gray-900 min-h-screen">
+    <!-- Background -->
+    <div class="fixed inset-0 -z-10 h-full w-full bg-white">
+        <div class="absolute bottom-auto left-auto right-0 top-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-[rgba(173,109,244,0.5)] opacity-50 blur-[80px]"></div>
+        <div class="absolute top-auto right-auto left-0 bottom-0 h-[500px] w-[500px] -translate-x-[30%] translate-y-[20%] rounded-full bg-[#38bdf8] opacity-50 blur-[80px]"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <a href="{% url 'main:home' %}" class="text-2xl font-bold gradient-text">
+                        {{ profile.name }}
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="{% url 'main:home' %}" 
+                           class="{% if page == 'home' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-blue-600{% endif %} px-3 py-2 text-sm font-medium transition-colors">
+                            Home
+                        </a>
+                        <a href="{% url 'main:about' %}" 
+                           class="{% if page == 'about' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-blue-600{% endif %} px-3 py-2 text-sm font-medium transition-colors">
+                            About
+                        </a>
+                        <a href="{% url 'main:projects' %}" 
+                           class="{% if page == 'projects' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-blue-600{% endif %} px-3 py-2 text-sm font-medium transition-colors">
+                            Projects
+                        </a>
+                        <a href="{% url 'main:mywork' %}" 
+                           class="{% if page == 'mywork' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-blue-600{% endif %} px-3 py-2 text-sm font-medium transition-colors">
+                            My Work
+                        </a>
+                        <a href="{% url 'main:certification' %}" 
+                           class="{% if page == 'certification' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-blue-600{% endif %} px-3 py-2 text-sm font-medium transition-colors">
+                            Certifications
+                        </a>
+                        <a href="{% url 'main:contact' %}" 
+                           class="{% if page == 'contact' %}text-blue-600 border-b-2 border-blue-600{% else %}text-gray-600 hover:text-blue-600{% endif %} px-3 py-2 text-sm font-medium transition-colors">
+                            Contact
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button type="button" id="mobile-menu-button" class="text-gray-600 hover:text-blue-600 focus:outline-none focus:text-blue-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white/95 backdrop-blur-md">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="{% url 'main:home' %}" class="{% if page == 'home' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-blue-600 hover:bg-gray-50{% endif %} block px-3 py-2 text-base font-medium transition-colors">Home</a>
+                <a href="{% url 'main:about' %}" class="{% if page == 'about' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-blue-600 hover:bg-gray-50{% endif %} block px-3 py-2 text-base font-medium transition-colors">About</a>
+                <a href="{% url 'main:projects' %}" class="{% if page == 'projects' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-blue-600 hover:bg-gray-50{% endif %} block px-3 py-2 text-base font-medium transition-colors">Projects</a>
+                <a href="{% url 'main:mywork' %}" class="{% if page == 'mywork' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-blue-600 hover:bg-gray-50{% endif %} block px-3 py-2 text-base font-medium transition-colors">My Work</a>
+                <a href="{% url 'main:certification' %}" class="{% if page == 'certification' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-blue-600 hover:bg-gray-50{% endif %} block px-3 py-2 text-base font-medium transition-colors">Certifications</a>
+                <a href="{% url 'main:contact' %}" class="{% if page == 'contact' %}text-blue-600 bg-blue-50{% else %}text-gray-600 hover:text-blue-600 hover:bg-gray-50{% endif %} block px-3 py-2 text-base font-medium transition-colors">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-20">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p>&copy; 2025 {{ profile.name }}. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    {% if profile.github_url %}
+                    <a href="{{ profile.github_url }}" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                    {% endif %}
+                    {% if profile.linkedin_url %}
+                    <a href="{{ profile.linkedin_url }}" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    {% endif %}
+                    <a href="mailto:{{ profile.email }}" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fas fa-envelope text-xl"></i>
+                    </a>
+                    {% if profile.twitter_url %}
+                    <a href="{{ profile.twitter_url }}" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    {% endif %}
+                    {% if profile.instagram_url %}
+                    <a href="{{ profile.instagram_url }}" target="_blank" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-instagram text-xl"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

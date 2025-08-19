@@ -1,0 +1,338 @@
+{% extends "admin/base_site.html" %}
+{% load admin_urls static %}
+
+{% block title %}{{ action_title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        body {
+            background: #ffffff !important;
+            color: #333333 !important;
+        }
+        
+        #header {
+            background: #ffffff !important;
+            color: #333333 !important;
+            border-bottom: 2px solid #0066cc;
+        }
+        
+        #branding h1, #branding h1 a:link, #branding h1 a:visited {
+            color: #0066cc !important;
+        }
+        
+        .form-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: #ffffff;
+            border: 2px solid #0066cc;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,102,204,0.1);
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8fbff;
+            border-radius: 6px;
+            border-left: 4px solid #0066cc;
+        }
+        
+        .form-section h3 {
+            color: #0066cc;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row.full-width {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #0066cc;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e6f3ff;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            border: 2px solid;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            border-color: #0066cc;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left-color: #dc3545;
+        }
+        
+        h1 {
+            color: #0066cc !important;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .help-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<h1>{{ action_title }}</h1>
+
+{% if error_message %}
+    <div class="alert alert-error">
+        {{ error_message }}
+    </div>
+{% endif %}
+
+<div class="form-container">
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Basic Information -->
+        <div class="form-section">
+            <h3>👤 Basic Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" value="{{ form_data.name|default:'' }}" required>
+                    <div class="help-text">Your full name as it should appear on the portfolio</div>
+                </div>
+                <div class="form-group">
+                    <label for="title">Professional Title</label>
+                    <input type="text" id="title" name="title" value="{{ form_data.title|default:'' }}" placeholder="e.g., Full Stack Developer">
+                    <div class="help-text">Your current role or professional title</div>
+                </div>
+            </div>
+            
+            <div class="form-row full-width">
+                <div class="form-group">
+                    <label for="bio">Bio/Description</label>
+                    <textarea id="bio" name="bio" placeholder="Brief description about yourself and your expertise...">{{ form_data.bio|default:'' }}</textarea>
+                    <div class="help-text">A short biography that will appear on your portfolio homepage</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="form-section">
+            <h3>📧 Contact Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" value="{{ form_data.email|default:'' }}" required>
+                    <div class="help-text">Primary email for contact</div>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" value="{{ form_data.phone|default:'' }}" placeholder="+1 (555) 123-4567">
+                    <div class="help-text">Phone number for contact</div>
+                </div>
+            </div>
+            
+            <div class="form-row full-width">
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" value="{{ form_data.location|default:'' }}" placeholder="New York, USA">
+                    <div class="help-text">Your current location or preferred work location</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Social Media & Links -->
+        <div class="form-section">
+            <h3>🔗 Social Media & Professional Links</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="linkedin_url">LinkedIn URL</label>
+                    <input type="url" id="linkedin_url" name="linkedin_url" value="{{ form_data.linkedin_url|default:'' }}" placeholder="https://linkedin.com/in/your-profile">
+                    <div class="help-text">Your LinkedIn profile URL</div>
+                </div>
+                <div class="form-group">
+                    <label for="github_url">GitHub URL</label>
+                    <input type="url" id="github_url" name="github_url" value="{{ form_data.github_url|default:'' }}" placeholder="https://github.com/your-username">
+                    <div class="help-text">Your GitHub profile URL</div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="twitter_url">Twitter URL</label>
+                    <input type="url" id="twitter_url" name="twitter_url" value="{{ form_data.twitter_url|default:'' }}" placeholder="https://twitter.com/your-handle">
+                    <div class="help-text">Your Twitter profile URL (optional)</div>
+                </div>
+                <div class="form-group">
+                    <label for="instagram_url">Instagram URL</label>
+                    <input type="url" id="instagram_url" name="instagram_url" value="{{ form_data.instagram_url|default:'' }}" placeholder="https://instagram.com/your-handle">
+                    <div class="help-text">Your Instagram profile URL (optional)</div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="website_url">Personal Website URL</label>
+                    <input type="url" id="website_url" name="website_url" value="{{ form_data.website_url|default:'' }}" placeholder="https://your-website.com">
+                    <div class="help-text">Your personal website or blog URL</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Media -->
+        <div class="form-section">
+            <h3>📸 Media & Documents</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="profile_photo_url">Profile Photo URL</label>
+                    <input type="url" id="profile_photo_url" name="profile_photo_url" value="{{ form_data.profile_photo_url|default:'' }}" placeholder="https://example.com/your-photo.jpg">
+                    <div class="help-text">URL to your profile photo or avatar</div>
+                </div>
+                <div class="form-group">
+                    <label for="resume_url">Resume/CV URL</label>
+                    <input type="url" id="resume_url" name="resume_url" value="{{ form_data.resume_url|default:'' }}" placeholder="https://example.com/your-resume.pdf">
+                    <div class="help-text">Direct link to your current resume</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Professional Details -->
+        <div class="form-section">
+            <h3>💼 Professional Details</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="years_experience">Years of Experience</label>
+                    <input type="number" id="years_experience" name="years_experience" value="{{ form_data.years_experience|default:'0' }}" min="0" max="50">
+                    <div class="help-text">Total years of professional experience</div>
+                </div>
+                <div class="form-group">
+                    <label for="languages">Programming Languages</label>
+                    <input type="text" id="languages" name="languages" value="{{ form_data.languages|default:'' }}" placeholder="JavaScript, Python, Java, C++">
+                    <div class="help-text">Comma-separated list of programming languages</div>
+                </div>
+            </div>
+            
+            <div class="form-row full-width">
+                <div class="form-group">
+                    <label for="skills">Key Skills</label>
+                    <textarea id="skills" name="skills" placeholder="React, Node.js, MongoDB, AWS, Docker, Agile Development...">{{ form_data.skills|default:'' }}</textarea>
+                    <div class="help-text">Comma-separated list of your key technical and soft skills</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Settings -->
+        <div class="form-section">
+            <h3>⚙️ Settings</h3>
+            <div class="checkbox-group">
+                <input type="checkbox" id="is_available_for_work" name="is_available_for_work" {% if form_data.is_available_for_work %}checked{% endif %}>
+                <label for="is_available_for_work">Available for Work</label>
+                <div class="help-text">Show that you're open to new opportunities</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e6f3ff;">
+            <button type="submit" class="btn btn-primary">
+                💾 {{ action_button }}
+            </button>
+            <a href="{% url 'admin:index' %}" class="btn btn-secondary">
+                ❌ Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

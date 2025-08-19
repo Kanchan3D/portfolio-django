@@ -1,0 +1,113 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="flex flex-col pt-20 mt-20 md:flex-row justify-self-center min-h-screen space-y-8 md:space-y-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Left Section - Text Content -->
+    <div class="mt-2 flex flex-col justify-items-center md:items-start text-center md:text-left max-w-xl md:w-2/3 fade-in">
+        <h1 class="text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 fade-in">
+            Welcome
+        </h1>
+        <p class="text-3xl font-bold mt-4 text-[#0284c7] slide-in-left">
+            Hi, I'm 
+            <span class="text-[#1d4ed8] hover:text-[#fda4af] transition-colors">
+                {{ profile.name }}
+            </span>
+        </p>
+        <p class="text-xl text-[#0c0a09] font-semibold hover:text-[#52525b] transition-colors slide-in-left">
+            A creative and driven <span class="text-[#c084fc] hover:text-[#ec4899] transition-colors">{{ profile.title }}</span>, currently pursuing
+            B.Tech in CSE.&nbsp;
+            <span class="text-[#34d399] hover:text-[#fda4af] transition-colors">Always exploring, learning</span>, and pushing the
+            boundaries of technology.
+        </p>
+        
+        <!-- MyInfo Section -->
+        <div class="mt-6 space-y-4 slide-in-left">
+            {% if profile.location %}
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-map-marker-alt text-blue-600"></i>
+                <span class="text-gray-700">{{ profile.location }}</span>
+            </div>
+            {% endif %}
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-envelope text-blue-600"></i>
+                <a href="mailto:{{ profile.email }}" class="text-gray-700 hover:text-blue-600 transition-colors">
+                    {{ profile.email }}
+                </a>
+            </div>
+            {% if profile.phone %}
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-phone text-blue-600"></i>
+                <span class="text-gray-700">{{ profile.phone }}</span>
+            </div>
+            {% endif %}
+            <div class="flex items-center space-x-3">
+                <i class="fab fa-linkedin text-blue-600"></i>
+                <a href="{{ profile.linkedin_url }}" target="_blank" class="text-gray-700 hover:text-blue-600 transition-colors">
+                    {{ profile.linkedin_url|slice:"8:" }}
+                </a>
+            </div>
+        </div>
+        
+        <div class="flex flex-col md:flex-row items-center justify-between md:justify-start mt-6 gap-5 slide-in-left">
+            <a href="{{ cv_url }}" 
+               target="_blank"
+               class="mt-6 px-6 py-3 text-[#1c1917] border-[#1c1917] border-2 rounded-lg text-xl font-semibold transition-all duration-300 hover:bg-[#fca5a5] hover-scale no-underline">
+                Download My CV
+            </a>
+            {% if profile.github_url %}
+            <a href="{{ profile.github_url }}" 
+               target="_blank"
+               class="mt-6 px-6 py-3 text-[#1c1917] border-[#1c1917] border-2 rounded-lg text-xl font-semibold transition-all duration-300 hover:bg-[#4ade80] hover-scale no-underline">
+                Go to GitHub
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right Section - Profile Image with Flip Effect -->
+    <div class="ml-10 flex flex-col items-center justify-items-center relative slide-in-right">
+        <div class="image-container relative">
+            <img id="profile-image" 
+                 src="{% static 'assets/icons/pf2.png' %}" 
+                 alt="Kanchan Dasila"
+                 class="rounded-full w-72 h-72 md:w-[28rem] md:h-[28rem] shadow-lg object-cover transition-transform duration-500 hover-scale">
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .image-container {
+        perspective: 1000px;
+    }
+    
+    #profile-image {
+        transition: transform 0.5s ease-in-out;
+    }
+    
+    #profile-image:hover {
+        transform: rotateY(10deg) scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileImage = document.getElementById('profile-image');
+        const defaultSrc = "{% static 'assets/icons/pf2.png' %}";
+        const hoverSrc = "{% static 'assets/icons/pft1.jpg' %}";
+        
+        profileImage.addEventListener('mouseover', function() {
+            this.src = hoverSrc;
+        });
+        
+        profileImage.addEventListener('mouseout', function() {
+            this.src = defaultSrc;
+        });
+    });
+</script>
+{% endblock %}

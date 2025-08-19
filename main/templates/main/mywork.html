@@ -1,0 +1,261 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Page Header -->
+    <div class="text-center mb-16 fade-in">
+        <h1 class="text-4xl lg:text-5xl font-bold gradient-text mb-6">My Work Experience</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Explore my professional journey, projects, and contributions in the field of web development 
+            and software engineering.
+        </p>
+    </div>
+
+    <!-- Work Experience Timeline -->
+    <div class="mb-16 slide-in-left">
+        <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-12">
+            Professional Experience
+        </h2>
+        <div class="max-w-4xl mx-auto">
+            <div class="relative">
+                <!-- Timeline Line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 bg-blue-200 h-full hidden md:block"></div>
+                
+                <!-- Timeline Items -->
+                <div class="space-y-12">
+                    <!-- Freelance Work -->
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="flex-1 md:text-right md:pr-8 mb-4 md:mb-0">
+                            <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Freelance Web Developer</h3>
+                                <p class="text-blue-600 font-semibold mb-2">Self-Employed</p>
+                                <p class="text-gray-600 mb-4">
+                                    Developed custom websites and web applications for various clients using 
+                                    modern technologies like React, Node.js, and MongoDB.
+                                </p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">Node.js</span>
+                                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">MongoDB</span>
+                                </div>
+                                <span class="text-sm text-gray-500 mt-4 block">2023 - Present</span>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-lg z-10 hidden md:block"></div>
+                        <div class="flex-1 md:pl-8"></div>
+                    </div>
+                    
+                    <!-- Student Projects -->
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="flex-1 md:pr-8 order-2 md:order-1"></div>
+                        <div class="w-8 h-8 bg-green-600 rounded-full border-4 border-white shadow-lg z-10 hidden md:block order-1 md:order-2"></div>
+                        <div class="flex-1 md:text-left md:pl-8 mb-4 md:mb-0 order-1 md:order-3">
+                            <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Student Developer</h3>
+                                <p class="text-green-600 font-semibold mb-2">Lovely Professional University</p>
+                                <p class="text-gray-600 mb-4">
+                                    Worked on various academic projects including e-commerce platforms, 
+                                    blogging systems, and learning management systems.
+                                </p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">JavaScript</span>
+                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">Django</span>
+                                </div>
+                                <span class="text-sm text-gray-500 mt-4 block">2022 - Present</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Open Source Contributions -->
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="flex-1 md:text-right md:pr-8 mb-4 md:mb-0">
+                            <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Open Source Contributor</h3>
+                                <p class="text-purple-600 font-semibold mb-2">GitHub Community</p>
+                                <p class="text-gray-600 mb-4">
+                                    Contributing to open-source projects and building community tools. 
+                                    Active in various development communities and forums.
+                                </p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">Git</span>
+                                    <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">Python</span>
+                                    <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 py-1 rounded-full">TypeScript</span>
+                                </div>
+                                <span class="text-sm text-gray-500 mt-4 block">2023 - Present</span>
+                            </div>
+                        </div>
+                        <div class="w-8 h-8 bg-purple-600 rounded-full border-4 border-white shadow-lg z-10 hidden md:block"></div>
+                        <div class="flex-1 md:pl-8"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Projects -->
+    <div class="mb-16 slide-in-right">
+        <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-12">
+            Key Projects & Achievements
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Project 1 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-shopping-cart text-2xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">E-Commerce Platform</h3>
+                    <p class="text-gray-600 mb-4">
+                        Full-stack e-commerce solution with payment integration, user authentication, 
+                        and admin dashboard.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">Node.js</span>
+                        <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">MongoDB</span>
+                    </div>
+                    <a href="{% url 'main:projects' %}" 
+                       class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Project 2 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-chart-line text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">LeetMetric Dashboard</h3>
+                    <p class="text-gray-600 mb-4">
+                        Analytics dashboard for tracking LeetCode progress with interactive charts 
+                        and performance metrics.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">Chart.js</span>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">API</span>
+                    </div>
+                    <a href="{% url 'main:projects' %}" 
+                       class="text-green-600 hover:text-green-800 font-semibold transition-colors">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Project 3 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-graduation-cap text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Learning Management System</h3>
+                    <p class="text-gray-600 mb-4">
+                        Complete LMS with course management, student tracking, and interactive 
+                        learning modules.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">Django</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">JavaScript</span>
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">PostgreSQL</span>
+                    </div>
+                    <a href="{% url 'main:projects' %}" 
+                       class="text-purple-600 hover:text-purple-800 font-semibold transition-colors">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills & Expertise -->
+    <div class="mb-16 fade-in">
+        <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-12">
+            Technical Expertise
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Frontend -->
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center hover-scale">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-code text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Frontend Development</h3>
+                <ul class="text-gray-600 space-y-1">
+                    <li>React & Next.js</li>
+                    <li>JavaScript & TypeScript</li>
+                    <li>HTML5 & CSS3</li>
+                    <li>Tailwind CSS</li>
+                </ul>
+            </div>
+            
+            <!-- Backend -->
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center hover-scale">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-server text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Backend Development</h3>
+                <ul class="text-gray-600 space-y-1">
+                    <li>Node.js & Express</li>
+                    <li>Python & Django</li>
+                    <li>REST APIs</li>
+                    <li>Authentication</li>
+                </ul>
+            </div>
+            
+            <!-- Database -->
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center hover-scale">
+                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-database text-2xl text-orange-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Database & Storage</h3>
+                <ul class="text-gray-600 space-y-1">
+                    <li>MongoDB</li>
+                    <li>PostgreSQL & MySQL</li>
+                    <li>Firebase</li>
+                    <li>Prisma ORM</li>
+                </ul>
+            </div>
+            
+            <!-- Tools -->
+            <div class="bg-white rounded-lg shadow-lg p-6 text-center hover-scale">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-tools text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Tools & Platforms</h3>
+                <ul class="text-gray-600 space-y-1">
+                    <li>Git & GitHub</li>
+                    <li>VS Code</li>
+                    <li>Docker</li>
+                    <li>AWS & Vercel</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Call to Action -->
+    <div class="text-center fade-in">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
+            <h2 class="text-3xl font-bold mb-4">Let's Work Together!</h2>
+            <p class="text-xl mb-6">
+                I'm always excited to take on new challenges and collaborate on interesting projects. 
+                Let's build something amazing together!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'main:contact' %}" 
+                   class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Get In Touch
+                </a>
+                <a href="{% url 'main:projects' %}" 
+                   class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
+                    <i class="fas fa-folder mr-2"></i>
+                    View All Projects
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

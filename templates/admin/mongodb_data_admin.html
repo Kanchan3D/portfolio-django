@@ -1,0 +1,477 @@
+{% extends "admin/base_site.html" %}
+{% load admin_urls static admin_list %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        /* Override Django admin dark styles */
+        body {
+            background: #ffffff !important;
+            color: #333333 !important;
+        }
+        
+        #header {
+            background: #ffffff !important;
+            color: #333333 !important;
+            border-bottom: 2px solid #0066cc;
+        }
+        
+        #branding h1, #branding h1 a:link, #branding h1 a:visited {
+            color: #0066cc !important;
+        }
+        
+        .mongodb-section {
+            background: #ffffff;
+            border: 2px solid #0066cc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,102,204,0.1);
+        }
+        
+        .mongodb-section h2 {
+            color: #0066cc;
+            border-bottom: 2px solid #e6f3ff;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: #ffffff;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid #e6f3ff;
+            color: #333333;
+        }
+        
+        .data-table th {
+            background-color: #0066cc;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #f8fbff;
+        }
+        
+        .data-table tr:hover {
+            background-color: #e6f3ff;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            border: 2px solid;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #0066cc;
+            border-color: #0066cc;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+            transform: translateY(-1px);
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #0066cc, #0056b3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 0.5rem;
+            text-align: center;
+            display: inline-block;
+            min-width: 140px;
+            box-shadow: 0 4px 6px rgba(0,102,204,0.3);
+        }
+        
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        
+        .text-truncate {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .content {
+            background: #ffffff !important;
+            color: #333333 !important;
+        }
+        
+        h1 {
+            color: #0066cc !important;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 0.5rem;
+        }
+        
+        .action-buttons {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8fbff;
+            border-radius: 8px;
+            border: 1px solid #e6f3ff;
+        }
+        
+        .featured-badge {
+            background: #28a745;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .regular-badge {
+            background: #6c757d;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<h1>🎛️ MongoDB Data Management Dashboard</h1>
+
+<!-- Profile Section -->
+<div class="mongodb-section">
+    <h2>👤 Profile Management</h2>
+    {% if active_profile %}
+        <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; background: #e6f3ff; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+            {% if active_profile.profile_photo_url %}
+                <img src="{{ active_profile.profile_photo_url }}" alt="Profile Photo" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #0066cc;">
+            {% else %}
+                <div style="width: 60px; height: 60px; background: #0066cc; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: bold;">
+                    {{ active_profile.name|first|upper }}
+                </div>
+            {% endif %}
+            <div>
+                <h4 style="margin: 0; color: #0066cc;">{{ active_profile.name }}</h4>
+                <p style="margin: 0; color: #666;">{{ active_profile.title|default:"No title set" }}</p>
+                <p style="margin: 0; font-size: 0.9rem; color: #666;">📧 {{ active_profile.email }} | 📱 {{ active_profile.phone|default:"No phone" }}</p>
+            </div>
+            <div>
+                <a href="{% url 'admin:manage_profile' %}" class="btn btn-warning">✏️ Edit Profile</a>
+            </div>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 2rem; background: #fff3cd; border-radius: 8px; margin-bottom: 1rem;">
+            <p style="color: #856404; font-size: 1.1rem; margin-bottom: 1rem;">🚨 No profile found! Create your profile to populate frontend data.</p>
+            <a href="{% url 'admin:manage_profile' %}" class="btn btn-primary">👤 Create Profile</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Quick Stats -->
+<div class="mongodb-section">
+    <h2>📊 Database Overview</h2>
+    <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+        <div class="stats-card">
+            <div class="stats-number">{{ profile_count }}</div>
+            <div>Profile{{ profile_count|pluralize }}</div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-number">{{ certificates_count }}</div>
+            <div>Certificates</div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-number">{{ projects_count }}</div>
+            <div>Projects</div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-number">{{ cvs_count }}</div>
+            <div>CVs</div>
+        </div>
+    </div>
+    
+    <div class="action-buttons">
+        <a href="{% url 'admin:manage_profile' %}" class="btn btn-primary">
+            👤 {{ active_profile|yesno:"Edit,Create" }} Profile
+        </a>
+        <a href="{% url 'admin:add_certificate' %}" class="btn btn-primary">
+            🏆 Add Certificate
+        </a>
+        <a href="{% url 'admin:add_project' %}" class="btn btn-primary">
+            💻 Add Project
+        </a>
+        <a href="{% url 'admin:add_cv' %}" class="btn btn-primary">
+            📄 Add CV
+        </a>
+        <a href="{% url 'admin:add_sample_data' %}" class="btn btn-success">
+            ➕ Add Sample Data
+        </a>
+    </div>
+</div>
+
+<!-- Certificates Section -->
+<div class="mongodb-section">
+    <h2>🏆 Certificates Management</h2>
+    {% if certificates %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Issuer</th>
+                    <th>Issue Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cert in certificates %}
+                <tr>
+                    <td class="text-truncate" title="{{ cert.title }}">{{ cert.title }}</td>
+                    <td>{{ cert.issuer|default:"Not specified" }}</td>
+                    <td>{{ cert.issue_date|default:"Not specified" }}</td>
+                    <td>
+                        {% if cert.is_featured %}
+                            <span class="featured-badge">✨ Featured</span>
+                        {% else %}
+                            <span class="regular-badge">Regular</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:edit_certificate' cert.id %}" class="btn btn-warning">
+                            ✏️ Edit
+                        </a>
+                        {% if cert.pdf_url %}
+                            <a href="{{ cert.pdf_url }}" target="_blank" class="btn btn-primary">
+                                📄 View PDF
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'admin:delete_certificate' cert.id %}" 
+                           class="btn btn-danger" 
+                           onclick="return confirm('Are you sure you want to delete this certificate?')">
+                            🗑️ Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="text-align: center; padding: 2rem; background: #f8fbff; border-radius: 8px; margin: 1rem 0;">
+            <p style="color: #666; font-size: 1.1rem;">📝 No certificates found in MongoDB.</p>
+            <a href="{% url 'admin:add_certificate' %}" class="btn btn-primary">➕ Add Your First Certificate</a>
+            <a href="{% url 'admin:add_sample_data' %}" class="btn btn-success">🎯 Add Sample Data</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Projects Section -->
+<div class="mongodb-section">
+    <h2>💻 Projects Management</h2>
+    {% if projects %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Technologies</th>
+                    <th>Status</th>
+                    <th>Links</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td class="text-truncate" title="{{ project.title }}">{{ project.title }}</td>
+                    <td class="text-truncate" title="{{ project.technologies }}">{{ project.technologies|default:"Not specified" }}</td>
+                    <td>
+                        {% if project.is_featured %}
+                            <span class="featured-badge">✨ Featured</span>
+                        {% else %}
+                            <span class="regular-badge">Regular</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if project.github_url %}
+                            <a href="{{ project.github_url }}" target="_blank" class="btn btn-primary">GitHub</a>
+                        {% endif %}
+                        {% if project.live_url %}
+                            <a href="{{ project.live_url }}" target="_blank" class="btn btn-primary">Live Demo</a>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:edit_project' project.id %}" class="btn btn-warning">
+                            ✏️ Edit
+                        </a>
+                        <a href="{% url 'admin:delete_project' project.id %}" 
+                           class="btn btn-danger" 
+                           onclick="return confirm('Are you sure you want to delete this project?')">
+                            🗑️ Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="text-align: center; padding: 2rem; background: #f8fbff; border-radius: 8px; margin: 1rem 0;">
+            <p style="color: #666; font-size: 1.1rem;">🚀 No projects found in MongoDB.</p>
+            <a href="{% url 'admin:add_project' %}" class="btn btn-primary">➕ Add Your First Project</a>
+            <a href="{% url 'admin:add_sample_data' %}" class="btn btn-success">🎯 Add Sample Data</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- CVs Section -->
+<div class="mongodb-section">
+    <h2>📄 CVs Management</h2>
+    {% if cvs %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cv in cvs %}
+                <tr>
+                    <td>{{ cv.title }}</td>
+                    <td class="text-truncate" title="{{ cv.description }}">{{ cv.description|default:"No description" }}</td>
+                    <td>
+                        {% if cv.is_current %}
+                            <span class="featured-badge">✅ Current</span>
+                        {% else %}
+                            <span class="regular-badge">Archive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'admin:edit_cv' cv.id %}" class="btn btn-warning">
+                            ✏️ Edit
+                        </a>
+                        {% if cv.pdf_url %}
+                            <a href="{{ cv.pdf_url }}" target="_blank" class="btn btn-primary">📄 View PDF</a>
+                        {% endif %}
+                        <a href="{% url 'admin:delete_cv' cv.id %}" 
+                           class="btn btn-danger" 
+                           onclick="return confirm('Are you sure you want to delete this CV?')">
+                            🗑️ Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div style="text-align: center; padding: 2rem; background: #f8fbff; border-radius: 8px; margin: 1rem 0;">
+            <p style="color: #666; font-size: 1.1rem;">📄 No CVs found in MongoDB.</p>
+            <a href="{% url 'admin:add_cv' %}" class="btn btn-primary">➕ Add Your First CV</a>
+            <a href="{% url 'admin:add_sample_data' %}" class="btn btn-success">🎯 Add Sample Data</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Quick Actions -->
+<div class="mongodb-section">
+    <h2>⚡ Quick Actions & Help</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+            <h4 style="color: #0066cc;">📝 Content Management</h4>
+            <ul style="color: #333;">
+                <li><strong>Add New:</strong> Use the blue "Add" buttons to create new content</li>
+                <li><strong>Edit:</strong> Click "✏️ Edit" to modify existing entries</li>
+                <li><strong>Delete:</strong> Remove outdated entries with confirmation</li>
+                <li><strong>Featured:</strong> Mark important items as featured</li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color: #0066cc;">🔗 External Links</h4>
+            <ul style="color: #333;">
+                <li><strong>PDF Links:</strong> Access certificates and CVs directly</li>
+                <li><strong>GitHub:</strong> View project source code</li>
+                <li><strong>Live Demo:</strong> See projects in action</li>
+                <li><strong>Portfolio:</strong> Preview your public site</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="action-buttons" style="margin-top: 1rem;">
+        <a href="/" target="_blank" class="btn btn-primary">🌐 View Portfolio Site</a>
+        <a href="/certification/" target="_blank" class="btn btn-primary">📜 View Certificates Page</a>
+        <a href="/projects/" target="_blank" class="btn btn-primary">� View Projects Page</a>
+    </div>
+</div>
+
+{% endblock %}

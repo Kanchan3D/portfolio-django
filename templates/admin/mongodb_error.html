@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+{% load admin_urls static %}
+
+{% block title %}MongoDB Error | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block content %}
+<div style="text-align: center; padding: 2rem;">
+    <h1>🚨 MongoDB Connection Error</h1>
+    
+    <div style="background: #f8d7da; color: #721c24; padding: 1rem; margin: 1rem; border-radius: 0.375rem; border: 1px solid #f5c6cb;">
+        <h3>Database Connection Failed</h3>
+        <p><strong>Error Details:</strong> {{ error }}</p>
+    </div>
+    
+    <div style="background: #fff3cd; color: #856404; padding: 1rem; margin: 1rem; border-radius: 0.375rem; border: 1px solid #ffeaa7;">
+        <h4>Troubleshooting Steps:</h4>
+        <ol style="text-align: left; display: inline-block;">
+            <li>Check your internet connection</li>
+            <li>Verify MongoDB Atlas cluster is running</li>
+            <li>Confirm database credentials are correct</li>
+            <li>Check if IP address is whitelisted in MongoDB Atlas</li>
+            <li>Verify the connection string format</li>
+        </ol>
+    </div>
+    
+    <div style="margin-top: 2rem;">
+        <a href="{% url 'admin:index' %}" style="background: #007bff; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 0.25rem; margin: 0.5rem;">
+            🔄 Retry Connection
+        </a>
+        <a href="/" target="_blank" style="background: #28a745; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 0.25rem; margin: 0.5rem;">
+            🌐 View Portfolio Site
+        </a>
+    </div>
+</div>
+{% endblock %}
