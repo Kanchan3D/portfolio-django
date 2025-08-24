@@ -2,6 +2,460 @@
 {% load static %}
 
 {% block content %}
+<!-- Custom CSS for Coding Profiles -->
+<style>
+    .coding-profile-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .coding-profile-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .coding-profile-card:hover::before {
+        left: 100%;
+    }
+    
+    .coding-profile-card:hover {
+        transform: translateY(-8px) scale(1.05);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .coding-profile-card svg,
+    .coding-profile-card div {
+        transition: all 0.3s ease;
+    }
+    
+    .coding-profile-card:hover svg {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .coding-profile-card:hover .w-12.h-12.bg-red-500 {
+        transform: scale(1.1) rotate(-5deg);
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .coding-profile-card:nth-child(odd) {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .coding-profile-card:nth-child(even) {
+        animation: float 3s ease-in-out infinite 1.5s;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        .coding-profile-card {
+            animation: none;
+        }
+    }
+    
+    /* Heatmap Styles */
+    .activity-calendar {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+    
+    .heatmap-cell {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: block;
+    }
+    
+    .heatmap-cell:hover {
+        transform: scale(1.2);
+        border: 2px solid #374151 !important;
+        z-index: 10;
+        position: relative;
+    }
+    
+    #heatmap-grid {
+        display: flex;
+        gap: 2px;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 10px 0;
+        min-height: 100px;
+    }
+    
+    #heatmap-grid .flex.flex-col {
+        flex-shrink: 0;
+    }
+    
+    .heatmap-tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        pointer-events: none;
+        z-index: 1000;
+        transform: translate(-50%, -100%);
+        margin-top: -8px;
+        white-space: nowrap;
+    }
+    
+    /* LeetCode Stats Animation */
+    @keyframes countUp {
+        from { opacity: 0; transform: scale(0.5); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    
+    .stat-number {
+        animation: countUp 0.6s ease-out;
+    }
+    
+    /* Responsive heatmap */
+    @media (max-width: 768px) {
+        .heatmap-cell {
+            width: 10px;
+            height: 10px;
+        }
+        
+        #heatmap-grid {
+            gap: 1px;
+        }
+    }
+</style>
+
+<script>
+// LeetCode Heatmap and Stats
+document.addEventListener('DOMContentLoaded', function() {
+    // Generate mock activity data (since we can't access real LeetCode API directly)
+    function generateMockActivityData() {
+        const data = {};
+        const today = new Date();
+        const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+        
+        for (let d = new Date(oneYearAgo); d <= today; d.setDate(d.getDate() + 1)) {
+            const dateStr = d.toISOString().split('T')[0];
+            // Random activity level (0-4)
+            data[dateStr] = Math.random() > 0.7 ? Math.floor(Math.random() * 5) : 0;
+        }
+        return data;
+    }
+    
+    // Create heatmap grid
+    function createHeatmapGrid() {
+        const grid = document.getElementById('heatmap-grid');
+        if (!grid) {
+            console.log('Heatmap grid element not found');
+            return;
+        }
+        
+        const activityData = generateMockActivityData();
+        const today = new Date();
+        const startDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+        
+        // Clear existing grid
+        grid.innerHTML = '';
+        
+        // Calculate the number of weeks (52-53 weeks in a year)
+        const oneDay = 24 * 60 * 60 * 1000;
+        const totalDays = Math.round((today - startDate) / oneDay);
+        const weeks = Math.ceil(totalDays / 7);
+        
+        console.log(`Creating heatmap for ${weeks} weeks, ${totalDays} days`);
+        
+        // Create weeks array
+        const weeksData = [];
+        for (let week = 0; week < weeks; week++) {
+            weeksData.push([]);
+        }
+        
+        // Fill weeks with days
+        let currentDate = new Date(startDate);
+        let weekIndex = 0;
+        let dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+        
+        // Fill empty days at the beginning of the first week
+        for (let i = 0; i < dayOfWeek; i++) {
+            weeksData[0].push(null);
+        }
+        
+        // Fill actual days
+        while (currentDate <= today && weekIndex < weeks) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const activity = activityData[dateStr] || 0;
+            
+            weeksData[weekIndex].push({
+                date: dateStr,
+                activity: activity,
+                dayOfWeek: currentDate.getDay()
+            });
+            
+            // Move to next day
+            currentDate.setDate(currentDate.getDate() + 1);
+            
+            // If we've completed a week (7 days), move to next week
+            if (weeksData[weekIndex].length === 7) {
+                weekIndex++;
+                if (weekIndex < weeks) {
+                    weeksData[weekIndex] = [];
+                }
+            }
+        }
+        
+        // Create the grid structure
+        weeksData.forEach((week, weekIdx) => {
+            const weekColumn = document.createElement('div');
+            weekColumn.className = 'flex flex-col gap-1';
+            weekColumn.style.minWidth = '14px';
+            
+            // Create 7 cells for each day of the week
+            for (let day = 0; day < 7; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'heatmap-cell';
+                
+                const dayData = week[day];
+                if (dayData) {
+                    // Set color based on activity level
+                    const colors = [
+                        'bg-gray-200',      // 0 - no activity
+                        'bg-green-200',     // 1 - low activity
+                        'bg-green-400',     // 2 - medium activity
+                        'bg-green-600',     // 3 - high activity
+                        'bg-green-800'      // 4 - very high activity
+                    ];
+                    
+                    cell.classList.add(colors[dayData.activity]);
+                    cell.setAttribute('data-date', dayData.date);
+                    cell.setAttribute('data-activity', dayData.activity);
+                    cell.setAttribute('title', `${dayData.activity} problems on ${new Date(dayData.date).toLocaleDateString()}`);
+                    
+                    // Add hover effect
+                    cell.addEventListener('mouseenter', function(e) {
+                        cell.style.transform = 'scale(1.2)';
+                        cell.style.border = '2px solid #374151';
+                        cell.style.zIndex = '10';
+                    });
+                    
+                    cell.addEventListener('mouseleave', function() {
+                        cell.style.transform = 'scale(1)';
+                        cell.style.border = 'none';
+                        cell.style.zIndex = 'auto';
+                    });
+                } else {
+                    // Empty cell for days not in the year
+                    cell.classList.add('bg-transparent');
+                    cell.style.visibility = 'hidden';
+                }
+                
+                weekColumn.appendChild(cell);
+            }
+            
+            grid.appendChild(weekColumn);
+        });
+        
+        console.log(`Heatmap grid created with ${weeksData.length} weeks`);
+    }
+    
+    // Number animation function
+    function animateNumber(element, start, end, duration) {
+        const startTime = performance.now();
+        
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function
+            const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(start + (end - start) * easeOutCubic);
+            
+            element.textContent = current;
+            
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                element.textContent = end;
+            }
+        }
+        
+        requestAnimationFrame(update);
+    }
+    
+    // Initialize heatmap and stats
+    function initializeLeetCodeSection() {
+        // Check if the section is visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    createHeatmapGrid();
+                    fetchLeetCodeStats(); // This now includes animation
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '50px'
+        });
+        
+        const heatmapSection = document.querySelector('.activity-calendar');
+        if (heatmapSection) {
+            observer.observe(heatmapSection);
+        }
+    }
+    
+    // Try to fetch real LeetCode data (fallback to mock data)
+    async function fetchLeetCodeStats() {
+        try {
+            // Set initial animated values for main cards
+            const mainStats = [
+                { id: 'total-solved', value: 531 },
+                { id: 'easy-solved', value: 196 },
+                { id: 'current-streak', value: 15 }
+            ];
+            
+            mainStats.forEach(stat => {
+                const element = document.getElementById(stat.id);
+                if (element) {
+                    element.classList.add('stat-number');
+                    animateNumber(element, 0, stat.value, 2000);
+                }
+            });
+            
+            // Try to fetch real data from API
+            const username = 'Kanchan3D';
+            const apiUrl = `https://leetcode-stats-api.herokuapp.com/${username}`;
+            
+            const response = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                },
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('LeetCode API data:', data);
+                
+                // Update main stats with real data
+                if (data.totalSolved) {
+                    const totalElement = document.getElementById('total-solved');
+                    if (totalElement) {
+                        animateNumber(totalElement, 0, data.totalSolved, 1500);
+                    }
+                }
+                
+                if (data.easySolved) {
+                    const easyElement = document.getElementById('easy-solved');
+                    if (easyElement) {
+                        animateNumber(easyElement, 0, data.easySolved, 1500);
+                    }
+                }
+                
+                // Update detailed API stats
+                updateDetailedStats(data);
+                
+            } else {
+                console.log('API response not ok, using default values');
+            }
+        } catch (error) {
+            console.log('LeetCode API not available, using default values:', error);
+        }
+    }
+    
+    // Update detailed stats from API
+    function updateDetailedStats(data) {
+        const statsMapping = [
+            { apiField: 'totalSolved', elementId: 'api-total-solved' },
+            { apiField: 'totalQuestions', elementId: 'api-total-questions', prefix: '/ ' },
+            { apiField: 'easySolved', elementId: 'api-easy-solved' },
+            { apiField: 'totalEasy', elementId: 'api-total-easy', prefix: '/ ' },
+            { apiField: 'mediumSolved', elementId: 'api-medium-solved' },
+            { apiField: 'totalMedium', elementId: 'api-total-medium', prefix: '/ ' },
+            { apiField: 'hardSolved', elementId: 'api-hard-solved' },
+            { apiField: 'totalHard', elementId: 'api-total-hard', prefix: '/ ' },
+            { apiField: 'acceptanceRate', elementId: 'api-acceptance-rate', suffix: '%' },
+            { apiField: 'ranking', elementId: 'api-ranking', format: 'number' },
+            { apiField: 'contributionPoints', elementId: 'api-contribution-points', format: 'number' }
+        ];
+        
+        statsMapping.forEach(stat => {
+            const element = document.getElementById(stat.elementId);
+            if (element && data[stat.apiField] !== undefined) {
+                let value = data[stat.apiField];
+                
+                if (stat.format === 'number') {
+                    value = value.toLocaleString();
+                }
+                
+                const prefix = stat.prefix || '';
+                const suffix = stat.suffix || '';
+                
+                if (stat.prefix || stat.suffix) {
+                    element.textContent = prefix + value + suffix;
+                } else {
+                    if (element.id.includes('api-total-') || element.id.includes('api-medium-') || element.id.includes('api-hard-') || element.id.includes('api-easy-')) {
+                        animateNumber(element, 0, parseInt(value), 1000);
+                    } else {
+                        element.textContent = value;
+                    }
+                }
+            }
+        });
+        
+        // Update progress bars
+        updateProgressBars(data);
+    }
+    
+    // Update progress bars with animation
+    function updateProgressBars(data) {
+        const progressBars = [
+            {
+                barId: 'total-progress',
+                solved: data.totalSolved || 531,
+                total: data.totalQuestions || 3661
+            },
+            {
+                barId: 'easy-progress',
+                solved: data.easySolved || 196,
+                total: data.totalEasy || 891
+            },
+            {
+                barId: 'medium-progress',
+                solved: data.mediumSolved || 266,
+                total: data.totalMedium || 1907
+            },
+            {
+                barId: 'hard-progress',
+                solved: data.hardSolved || 69,
+                total: data.totalHard || 863
+            }
+        ];
+        
+        progressBars.forEach(bar => {
+            const element = document.getElementById(bar.barId);
+            if (element) {
+                const percentage = Math.round((bar.solved / bar.total) * 100);
+                setTimeout(() => {
+                    element.style.width = percentage + '%';
+                }, 500);
+            }
+        });
+    }
+    
+    // Initialize everything
+    initializeLeetCodeSection();
+});
+</script>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Page Header -->
     <div class="text-center mb-16 fade-in">
@@ -15,7 +469,7 @@
     <!-- Work Experience Timeline -->
     <div class="mb-16 slide-in-left">
         <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-12">
-            Professional Experience
+            Professional Experience & Projects
         </h2>
         <div class="max-w-4xl mx-auto">
             <div class="relative">
@@ -24,66 +478,76 @@
                 
                 <!-- Timeline Items -->
                 <div class="space-y-12">
-                    <!-- Freelance Work -->
+                    <!-- Current Education -->
                     <div class="flex flex-col md:flex-row items-center">
                         <div class="flex-1 md:text-right md:pr-8 mb-4 md:mb-0">
                             <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Freelance Web Developer</h3>
-                                <p class="text-blue-600 font-semibold mb-2">Self-Employed</p>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Computer Science Engineering Student</h3>
+                                <p class="text-blue-600 font-semibold mb-2">Lovely Professional University</p>
                                 <p class="text-gray-600 mb-4">
-                                    Developed custom websites and web applications for various clients using 
-                                    modern technologies like React, Node.js, and MongoDB.
+                                    Currently pursuing B.Tech in Computer Science Engineering with a CGPA of 8.29. 
+                                    Actively involved in coding competitions, hackathons, and project development.
                                 </p>
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
-                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">Node.js</span>
-                                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">MongoDB</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">Data Structures</span>
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">Algorithms</span>
+                                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">Software Engineering</span>
                                 </div>
-                                <span class="text-sm text-gray-500 mt-4 block">2023 - Present</span>
+                                <div class="mt-3 text-sm text-gray-600">
+                                    <p><strong>CGPA:</strong> 8.29/10</p>
+                                    <p><strong>Location:</strong> Phagwara, Punjab</p>
+                                </div>
+                                <span class="text-sm text-gray-500 mt-4 block">Aug 2022 - Present</span>
                             </div>
                         </div>
                         <div class="w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-lg z-10 hidden md:block"></div>
                         <div class="flex-1 md:pl-8"></div>
                     </div>
                     
-                    <!-- Student Projects -->
+                    <!-- Full Stack Development Projects -->
                     <div class="flex flex-col md:flex-row items-center">
                         <div class="flex-1 md:pr-8 order-2 md:order-1"></div>
                         <div class="w-8 h-8 bg-green-600 rounded-full border-4 border-white shadow-lg z-10 hidden md:block order-1 md:order-2"></div>
                         <div class="flex-1 md:text-left md:pl-8 mb-4 md:mb-0 order-1 md:order-3">
                             <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Student Developer</h3>
-                                <p class="text-green-600 font-semibold mb-2">Lovely Professional University</p>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Full Stack Developer</h3>
+                                <p class="text-green-600 font-semibold mb-2">Independent Projects</p>
                                 <p class="text-gray-600 mb-4">
-                                    Worked on various academic projects including e-commerce platforms, 
-                                    blogging systems, and learning management systems.
+                                    Developed multiple full-stack applications including e-commerce platforms, 
+                                    learning management systems, and blogging platforms using modern web technologies.
                                 </p>
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">JavaScript</span>
-                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">Node.js</span>
                                     <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">Django</span>
+                                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">MongoDB</span>
                                 </div>
-                                <span class="text-sm text-gray-500 mt-4 block">2022 - Present</span>
+                                <span class="text-sm text-gray-500 mt-4 block">2023 - Present</span>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Open Source Contributions -->
+                    <!-- Previous Education -->
                     <div class="flex flex-col md:flex-row items-center">
                         <div class="flex-1 md:text-right md:pr-8 mb-4 md:mb-0">
                             <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Open Source Contributor</h3>
-                                <p class="text-purple-600 font-semibold mb-2">GitHub Community</p>
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">Academic Foundation</h3>
+                                <p class="text-purple-600 font-semibold mb-2">The Asian Academy Sr. Secondary School</p>
                                 <p class="text-gray-600 mb-4">
-                                    Contributing to open-source projects and building community tools. 
-                                    Active in various development communities and forums.
+                                    Completed secondary education with strong performance in science and mathematics. 
+                                    Developed early interest in computer science and programming.
                                 </p>
                                 <div class="flex flex-wrap gap-2">
-                                    <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">Git</span>
-                                    <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">Python</span>
-                                    <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 py-1 rounded-full">TypeScript</span>
+                                    <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">Mathematics</span>
+                                    <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">Physics</span>
+                                    <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 py-1 rounded-full">Chemistry</span>
                                 </div>
-                                <span class="text-sm text-gray-500 mt-4 block">2023 - Present</span>
+                                <div class="mt-3 text-sm text-gray-600">
+                                    <p><strong>Intermediate:</strong> 77% (2020-21)</p>
+                                    <p><strong>Matriculation:</strong> 81.2% (2018-19)</p>
+                                    <p><strong>Location:</strong> Pithoragarh, Uttarakhand</p>
+                                </div>
+                                <span class="text-sm text-gray-500 mt-4 block">2018 - 2021</span>
                             </div>
                         </div>
                         <div class="w-8 h-8 bg-purple-600 rounded-full border-4 border-white shadow-lg z-10 hidden md:block"></div>
@@ -97,10 +561,10 @@
     <!-- Key Projects -->
     <div class="mb-16 slide-in-right">
         <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-12">
-            Key Projects & Achievements
+            Featured Projects & Achievements
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Project 1 -->
+            <!-- E-Commerce Platform -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
                 <div class="p-6">
                     <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
@@ -108,13 +572,17 @@
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">E-Commerce Platform</h3>
                     <p class="text-gray-600 mb-4">
-                        Full-stack e-commerce solution with payment integration, user authentication, 
-                        and admin dashboard.
+                        Comprehensive e-commerce solution with modern UI/UX, secure payment integration, 
+                        user authentication, and advanced admin dashboard for inventory management.
                     </p>
                     <div class="flex flex-wrap gap-2 mb-4">
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
                         <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">Node.js</span>
                         <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">MongoDB</span>
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">Payment APIs</span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-500"><strong>Features:</strong> Cart, Checkout, Admin Panel, Analytics</p>
                     </div>
                     <a href="{% url 'main:projects' %}" 
                        class="text-blue-600 hover:text-blue-800 font-semibold transition-colors">
@@ -123,21 +591,25 @@
                 </div>
             </div>
             
-            <!-- Project 2 -->
+            <!-- LeetMetric Dashboard -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
                 <div class="p-6">
                     <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                         <i class="fas fa-chart-line text-2xl text-green-600"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3">LeetMetric Dashboard</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">LeetMetric Analytics</h3>
                     <p class="text-gray-600 mb-4">
-                        Analytics dashboard for tracking LeetCode progress with interactive charts 
-                        and performance metrics.
+                        Advanced analytics dashboard for tracking LeetCode progress with interactive charts, 
+                        performance metrics, and detailed problem-solving statistics.
                     </p>
                     <div class="flex flex-wrap gap-2 mb-4">
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">React</span>
                         <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">Chart.js</span>
-                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">API</span>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">LeetCode API</span>
+                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">Data Analytics</span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-500"><strong>Features:</strong> Progress Tracking, Visual Analytics, Performance Metrics</p>
                     </div>
                     <a href="{% url 'main:projects' %}" 
                        class="text-green-600 hover:text-green-800 font-semibold transition-colors">
@@ -146,7 +618,7 @@
                 </div>
             </div>
             
-            <!-- Project 3 -->
+            <!-- Learning Management System -->
             <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
                 <div class="p-6">
                     <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
@@ -154,17 +626,164 @@
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Learning Management System</h3>
                     <p class="text-gray-600 mb-4">
-                        Complete LMS with course management, student tracking, and interactive 
-                        learning modules.
+                        Complete LMS platform with course management, student enrollment, progress tracking, 
+                        interactive assignments, and real-time collaboration features.
                     </p>
                     <div class="flex flex-wrap gap-2 mb-4">
                         <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">Django</span>
                         <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">JavaScript</span>
                         <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">PostgreSQL</span>
+                        <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">REST APIs</span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-500"><strong>Features:</strong> Course Creation, Student Portal, Assessment Tools</p>
                     </div>
                     <a href="{% url 'main:projects' %}" 
                        class="text-purple-600 hover:text-purple-800 font-semibold transition-colors">
                         View Details →
+                    </a>
+                </div>
+            </div>
+            
+            <!-- URL Shortener -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-link text-2xl text-indigo-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">URL Shortener Service</h3>
+                    <p class="text-gray-600 mb-4">
+                        Professional URL shortening service with custom aliases, analytics tracking, 
+                        QR code generation, and comprehensive link management dashboard.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">Node.js</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">Express</span>
+                        <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">MongoDB</span>
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded-full">QR Codes</span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-500"><strong>Features:</strong> Custom URLs, Analytics, QR Generation, Bulk Operations</p>
+                    </div>
+                    <a href="{% url 'main:projects' %}" 
+                       class="text-indigo-600 hover:text-indigo-800 font-semibold transition-colors">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Blogging Platform -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-pink-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-blog text-2xl text-pink-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Modern Blogging Platform</h3>
+                    <p class="text-gray-600 mb-4">
+                        Feature-rich blogging platform with markdown support, SEO optimization, 
+                        comment system, social sharing, and comprehensive content management.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">Next.js</span>
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded-full">Markdown</span>
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">SEO</span>
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-1 rounded-full">CMS</span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-500"><strong>Features:</strong> Rich Editor, SEO Tools, Comments, Social Integration</p>
+                    </div>
+                    <a href="{% url 'main:projects' %}" 
+                       class="text-pink-600 hover:text-pink-800 font-semibold transition-colors">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Voting System -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale">
+                <div class="p-6">
+                    <div class="w-16 h-16 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-vote-yea text-2xl text-teal-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Digital Voting System</h3>
+                    <p class="text-gray-600 mb-4">
+                        Secure digital voting platform with user authentication, real-time results, 
+                        administrative controls, and comprehensive audit trails for transparency.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2 py-1 rounded-full">Django</span>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full">Authentication</span>
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">Security</span>
+                        <span class="bg-orange-100 text-orange-800 text-xs font-medium px-2 py-1 rounded-full">Real-time</span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-500"><strong>Features:</strong> Secure Voting, Admin Panel, Results Dashboard, Audit Logs</p>
+                    </div>
+                    <a href="{% url 'main:projects' %}" 
+                       class="text-teal-600 hover:text-teal-800 font-semibold transition-colors">
+                        View Details →
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Academic Achievements & Certifications -->
+    <div class="mb-16 fade-in">
+        <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-12">
+            Academic Achievements & Certifications
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Current Academic Performance -->
+            <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-graduation-cap text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Academic Excellence</h3>
+                <div class="space-y-2 text-gray-600">
+                    <p><strong>Current CGPA:</strong> 8.29/10</p>
+                    <p><strong>Program:</strong> B.Tech CSE</p>
+                    <p><strong>Institution:</strong> LPU, Punjab</p>
+                    <p><strong>Year:</strong> 2022-Present</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <p class="text-sm text-blue-600 font-medium">Consistent high performance in core CS subjects</p>
+                </div>
+            </div>
+            
+            <!-- Previous Academic Record -->
+            <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-award text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">School Achievements</h3>
+                <div class="space-y-2 text-gray-600">
+                    <p><strong>Class 12th:</strong> 77%</p>
+                    <p><strong>Class 10th:</strong> 81.2%</p>
+                    <p><strong>School:</strong> Asian Academy Sr. Sec.</p>
+                    <p><strong>Location:</strong> Pithoragarh, UK</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <p class="text-sm text-green-600 font-medium">Strong foundation in Science & Mathematics</p>
+                </div>
+            </div>
+            
+            <!-- Technical Certifications -->
+            <div class="bg-white rounded-lg shadow-lg p-6 hover-scale">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-certificate text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-3">Professional Certifications</h3>
+                <div class="space-y-2 text-gray-600">
+                    <p>• Web Development Certifications</p>
+                    <p>• Programming Language Courses</p>
+                    <p>• Database Management</p>
+                    <p>• Cloud Computing Basics</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <a href="{% url 'main:certification' %}" 
+                       class="text-purple-600 hover:text-purple-800 font-medium transition-colors">
+                        View All Certificates →
                     </a>
                 </div>
             </div>
@@ -231,6 +850,167 @@
                     <li>Docker</li>
                     <li>AWS & Vercel</li>
                 </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coding Profiles Section -->
+    <div class="mb-16 fade-in">
+        <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-4">
+            Find Me on Coding Platforms
+        </h2>
+        <p class="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto">
+            Connect with me on various coding platforms where I showcase my problem-solving skills, 
+            contribute to open-source projects, and participate in programming challenges.
+        </p>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 max-w-6xl mx-auto">
+            <!-- GitHub -->
+            <a href="https://github.com/kanchan3d" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="coding-profile-card bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border hover-scale group transition-all duration-300 hover:shadow-xl hover:border-gray-400">
+                <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-gray-800 group-hover:text-black transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.374 0 0 5.373 0 12 0 17.302 3.438 21.8 8.207 23.387c.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                </div>
+                <span class="text-lg font-semibold text-gray-700 group-hover:text-black transition-colors">GitHub</span>
+                <div class="mt-2 text-xs text-gray-500 group-hover:text-gray-700 transition-colors">Open Source</div>
+            </a>
+            
+            <!-- LeetCode -->
+            <a href="https://leetcode.com/u/Kanchan3D/" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="coding-profile-card bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border hover-scale group transition-all duration-300 hover:shadow-xl hover:border-orange-400">
+                <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-orange-500 group-hover:text-orange-600 transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+                    </svg>
+                </div>
+                <span class="text-lg font-semibold text-gray-700 group-hover:text-orange-600 transition-colors">LeetCode</span>
+                <div class="mt-2 text-xs text-gray-500 group-hover:text-gray-700 transition-colors">Problem Solving</div>
+            </a>
+            
+            <!-- GeeksforGeeks -->
+            <a href="https://www.geeksforgeeks.org/user/kanchan3d/" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="coding-profile-card bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border hover-scale group transition-all duration-300 hover:shadow-xl hover:border-green-400">
+                <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-green-600 group-hover:text-green-700 transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21.45 14.315c-.143.28-.334.532-.565.745a3.691 3.691 0 0 1-1.104.695 4.51 4.51 0 0 1-3.116-.016 3.79 3.79 0 0 1-2.135-2.078 3.571 3.571 0 0 1-.13-.353h7.418a4.26 4.26 0 0 1-.368 1.007zm-11.99-.654a3.793 3.793 0 0 1-2.134 2.078 4.51 4.51 0 0 1-3.117.016 3.7 3.7 0 0 1-1.104-.695 2.652 2.652 0 0 1-.564-.745 4.221 4.221 0 0 1-.368-1.007H9.59c-.04.121-.08.238-.13.353zm15.116-3.266a5.151 5.151 0 0 0-.943-1.749 4.726 4.726 0 0 0-1.492-1.31 4.205 4.205 0 0 0-1.943-.478 5.025 5.025 0 0 0-1.924.377 4.657 4.657 0 0 0-1.522 1.044c-.65-.67-1.486-1.044-2.376-1.044-.89 0-1.726.375-2.376 1.044a4.657 4.657 0 0 0-1.522-1.044 5.025 5.025 0 0 0-1.924-.377 4.205 4.205 0 0 0-1.943.478A4.726 4.726 0 0 0 1.34 8.3a5.151 5.151 0 0 0-.943 1.749A5.983 5.983 0 0 0 0 12c0 .69.135 1.357.397 1.951.262.594.647 1.096 1.134 1.478.487.382 1.048.633 1.652.739a5.779 5.779 0 0 0 1.964 0 4.618 4.618 0 0 0 1.652-.739c.487-.382.872-.884 1.134-1.478A5.148 5.148 0 0 0 9.59 12a5.148 5.148 0 0 0 1.657 1.951c.262.594.647 1.096 1.134 1.478a4.618 4.618 0 0 0 1.652.739 5.779 5.779 0 0 0 1.964 0 4.618 4.618 0 0 0 1.652-.739c.487-.382.872-.884 1.134-1.478A5.983 5.983 0 0 0 24 12a5.983 5.983 0 0 0-.397-1.951z"/>
+                    </svg>
+                </div>
+                <span class="text-lg font-semibold text-gray-700 group-hover:text-green-700 transition-colors">GeeksforGeeks</span>
+                <div class="mt-2 text-xs text-gray-500 group-hover:text-gray-700 transition-colors">Algorithms</div>
+            </a>
+            
+            <!-- Coding Ninjas -->
+            <a href="https://www.naukri.com/code360/profile/KanchanD" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="coding-profile-card bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border hover-scale group transition-all duration-300 hover:shadow-xl hover:border-red-400">
+                <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                    <div class="w-12 h-12 bg-red-500 group-hover:bg-red-600 transition-colors rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">CN</span>
+                    </div>
+                </div>
+                <span class="text-lg font-semibold text-gray-700 group-hover:text-red-600 transition-colors">Coding Ninjas</span>
+                <div class="mt-2 text-xs text-gray-500 group-hover:text-gray-700 transition-colors">Practice</div>
+            </a>
+            
+            <!-- HackerRank -->
+            <a href="https://www.hackerrank.com/profile/kanchan_dasila1" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="coding-profile-card bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border hover-scale group transition-all duration-300 hover:shadow-xl hover:border-green-500">
+                <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-green-500 group-hover:text-green-600 transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c1.285 0 9.75 4.886 10.392 6 .642 1.114.642 10.886 0 12C21.75 19.114 13.285 24 12 24s-9.75-4.886-10.392-6c-.642-1.114-.642-10.886 0-12C2.25 4.886 10.715 0 12 0zm2.295 6.799c-.141 0-.258.115-.258.258v3.875h-4.074V7.057c0-.143-.116-.258-.258-.258H8.82c-.142 0-.258.115-.258.258v9.886c0 .143.116.258.258.258h.885c.142 0 .258-.115.258-.258v-4.320h4.074v4.320c0 .143.116.258.258.258h.885c.142 0 .258-.115.258-.258V7.057c0-.143-.116-.258-.258-.258h-.885z"/>
+                    </svg>
+                </div>
+                <span class="text-lg font-semibold text-gray-700 group-hover:text-green-600 transition-colors">HackerRank</span>
+                <div class="mt-2 text-xs text-gray-500 group-hover:text-gray-700 transition-colors">Challenges</div>
+            </a>
+            
+            <!-- Codeforces -->
+            <a href="https://codeforces.com/profile/kanchan_3d" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               class="coding-profile-card bg-white shadow-lg rounded-lg p-6 flex flex-col items-center border hover-scale group transition-all duration-300 hover:shadow-xl hover:border-blue-500">
+                <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                    <svg class="w-12 h-12 text-blue-500 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M4.5 7.5C5.328 7.5 6 8.172 6 9v10.5c0 .828-.672 1.5-1.5 1.5S3 20.328 3 19.5V9c0-.828.672-1.5 1.5-1.5zm15 0c.828 0 1.5.672 1.5 1.5v10.5c0 .828-.672 1.5-1.5 1.5S18 20.328 18 19.5V9c0-.828.672-1.5 1.5-1.5zM12 3c.828 0 1.5.672 1.5 1.5v15c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5v-15C10.5 3.672 11.172 3 12 3z"/>
+                    </svg>
+                </div>
+                <span class="text-lg font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">Codeforces</span>
+                <div class="mt-2 text-xs text-gray-500 group-hover:text-gray-700 transition-colors">Contests</div>
+            </a>
+        </div>
+        
+        <!-- LeetCode Heatmap Section -->
+        <div class="mt-12 bg-white rounded-2xl shadow-xl p-8 border">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center flex items-center justify-center">
+                <svg class="w-8 h-8 text-orange-500 mr-3" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+                </svg>
+                LeetCode Activity Heatmap
+            </h3>
+            
+            <!-- Heatmap Container -->
+            <div class="flex flex-col items-center">                
+                <div class="mt-8 w-full max-w-6xl">
+                        <!-- LeetCode Card Widget -->
+                        <div class="flex justify-center mb-6">
+                            <img 
+                                src="https://leetcard.jacoblin.cool/Kanchan3D?theme=light&font=Karma&ext=heatmap" 
+                                alt="LeetCode Stats Card"
+                                class="rounded-lg shadow-lg max-w-full h-auto"
+                                loading="lazy"
+                            />
+                        </div>
+                </div>
+                
+                <!-- Profile Link -->
+                <div class="mt-6">
+                    <a href="https://leetcode.com/u/Kanchan3D/" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="inline-flex items-center bg-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+                        </svg>
+                        View Full LeetCode Profile
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coding Statistics -->
+        <div class="mt-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white">
+            <h3 class="text-2xl font-bold text-center mb-8">Coding Journey Statistics</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-3xl font-bold mb-2">800+</div>
+                    <div class="text-purple-100">Problems Solved</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold mb-2">6</div>
+                    <div class="text-purple-100">Active Platforms</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold mb-2">20+</div>
+                    <div class="text-purple-100">Repositories</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold mb-2">2+</div>
+                    <div class="text-purple-100">Years Coding</div>
+                </div>
             </div>
         </div>
     </div>

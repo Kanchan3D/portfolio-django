@@ -4,49 +4,216 @@
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <!-- Page Header -->
-    <div class="text-center mb-16 fade-in">
-        <h1 class="text-4xl lg:text-5xl font-bold gradient-text mb-6">Certifications</h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-            Here are the certifications and courses I've completed to enhance my skills and stay 
-            updated with the latest technologies in web development and computer science.
+    <div class="text-center mb-12 sm:mb-16 fade-in px-2 sm:px-4">
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold gradient-text mb-4 sm:mb-6">Professional Certifications</h1>
+        <p class="text-base sm:text-lg lg:text-xl text-gray-600 max-w-xs sm:max-w-2xl lg:max-w-3xl mx-auto leading-relaxed">
+            <span class="hidden sm:inline">A comprehensive collection of my professional certifications and completed courses 
+            that demonstrate my expertise in modern web development, programming languages, 
+            and emerging technologies.</span>
+            <span class="sm:hidden">Professional certifications demonstrating expertise in web development, programming, and emerging technologies.</span>
         </p>
+        <div class="mt-4 sm:mt-6 inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-blue-100 text-blue-800 rounded-full text-sm sm:text-base">
+            <i class="fas fa-award mr-1 sm:mr-2"></i>
+            <span class="font-semibold">
+                <span class="hidden sm:inline">{{ certifications|length }} Certifications Completed</span>
+                <span class="sm:hidden">{{ certifications|length }} Certificates</span>
+            </span>
+        </div>
+        
+        <!-- LinkedIn Verification Button -->
+        <div class="mt-4 sm:mt-6">
+            <a href="https://www.linkedin.com/in/kanchan3/details/certifications/" 
+               target="_blank"
+               rel="noopener noreferrer"
+               class="inline-flex items-center px-4 sm:px-6 lg:px-8 py-2 sm:py-3 bg-blue-700 text-white rounded-full font-semibold hover:bg-blue-800 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base">
+                <i class="fab fa-linkedin mr-2 sm:mr-3 text-lg sm:text-xl"></i>
+                <span class="hidden sm:inline">View All 30+ Certificates on LinkedIn</span>
+                <span class="sm:hidden">View on LinkedIn</span>
+                <i class="fas fa-external-link-alt ml-1 sm:ml-2 text-xs sm:text-sm"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Certification Categories -->
+    <div class="mb-8 sm:mb-12 fade-in px-2 sm:px-4">
+        <div class="flex flex-wrap justify-center gap-2 sm:gap-3 lg:gap-4">
+            <button class="filter-btn active px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors hover:text-white text-xs sm:text-sm lg:text-base" data-filter="all">
+                <span class="hidden sm:inline">All Certificates</span>
+                <span class="sm:hidden">All</span>
+            </button>
+            <button class="filter-btn px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-blue-700 transition-colors hover:text-white transition-colors text-xs sm:text-sm lg:text-base" data-filter="frontend">
+                <span class="hidden lg:inline">Frontend Development</span>
+                <span class="lg:hidden">Frontend</span>
+            </button>
+            <button class="filter-btn px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-blue-700 transition-colors hover:text-white transition-colors text-xs sm:text-sm lg:text-base" data-filter="backend">
+                <span class="hidden lg:inline">Backend Development</span>
+                <span class="lg:hidden">Backend</span>
+            </button>
+            <button class="filter-btn px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-blue-700 transition-colors hover:text-white transition-colors text-xs sm:text-sm lg:text-base" data-filter="security">
+                <span class="hidden lg:inline">Cybersecurity</span>
+                <span class="lg:hidden">Security</span>
+            </button>
+            <button class="filter-btn px-3 sm:px-4 lg:px-6 py-1.5 sm:py-2 bg-gray-200 text-gray-700 rounded-full font-semibold hover:bg-blue-700 transition-colors hover:text-white transition-colors text-xs sm:text-sm lg:text-base" data-filter="programming">
+                <span class="hidden lg:inline">Programming Languages</span>
+                <span class="lg:hidden">Programming</span>
+            </button>
+        </div>
     </div>
 
     <!-- Certifications Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16 px-2 sm:px-4">
         {% for cert in certifications %}
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover-scale fade-in">
+        <div class="certificate-card bg-white rounded-lg shadow-lg overflow-hidden hover-scale fade-in 
+                    {% if 'JavaScript' in cert.title or 'React' in cert.title or 'Frontend' in cert.title or 'PHP' in cert.title %}frontend{% endif %}
+                    {% if 'Node' in cert.title or 'Express' in cert.title or 'TypeScript' in cert.title %}backend{% endif %}
+                    {% if 'Ethical' in cert.title or 'Hacking' in cert.title %}security{% endif %}
+                    {% if 'C++' in cert.title or 'cpp' in cert.title or 'Command' in cert.title %}programming{% endif %}" 
+             data-category="{% if 'JavaScript' in cert.title or 'React' in cert.title or 'Frontend' in cert.title or 'PHP' in cert.title %}frontend{% elif 'Node' in cert.title or 'Express' in cert.title or 'TypeScript' in cert.title %}backend{% elif 'Ethical' in cert.title or 'Hacking' in cert.title %}security{% else %}programming{% endif %}">
+            
             <!-- Certificate Preview -->
-            <div class="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                <div class="text-center text-white">
-                    <i class="fas fa-certificate text-4xl mb-4 opacity-80"></i>
-                    <h3 class="text-xl font-bold">{{ cert.title }}</h3>
+            <div class="relative h-32 sm:h-40 lg:h-48 bg-gradient-to-br 
+                        {% if 'JavaScript' in cert.title %}from-yellow-400 to-orange-500
+                        {% elif 'React' in cert.title %}from-blue-400 to-cyan-500
+                        {% elif 'Node' in cert.title %}from-green-400 to-emerald-600
+                        {% elif 'TypeScript' in cert.title %}from-blue-600 to-indigo-700
+                        {% elif 'Frontend' in cert.title %}from-purple-400 to-pink-500
+                        {% elif 'Express' in cert.title %}from-gray-600 to-gray-800
+                        {% elif 'Next' in cert.title %}from-black to-gray-700
+                        {% elif 'PHP' in cert.title %}from-indigo-500 to-purple-700
+                        {% elif 'C++' in cert.title or 'cpp' in cert.title %}from-blue-800 to-indigo-900
+                        {% elif 'Ethical' in cert.title or 'Hacking' in cert.title %}from-red-500 to-red-700
+                        {% elif 'Command' in cert.title %}from-gray-700 to-black
+                        {% else %}from-blue-500 to-purple-600{% endif %} 
+                        flex items-center justify-center">
+                
+                <div class="text-center text-white p-2 sm:p-3 lg:p-4">
+                    <div class="mb-2 sm:mb-3 lg:mb-4">
+                        {% if 'JavaScript' in cert.title %}
+                            <i class="fab fa-js-square text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'React' in cert.title %}
+                            <i class="fab fa-react text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'Node' in cert.title %}
+                            <i class="fab fa-node-js text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'TypeScript' in cert.title %}
+                            <i class="fas fa-code text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'Frontend' in cert.title %}
+                            <i class="fas fa-laptop-code text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'Express' in cert.title %}
+                            <i class="fas fa-server text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'Next' in cert.title %}
+                            <i class="fas fa-layer-group text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'PHP' in cert.title %}
+                            <i class="fab fa-php text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'C++' in cert.title or 'cpp' in cert.title %}
+                            <i class="fas fa-code text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'Ethical' in cert.title or 'Hacking' in cert.title %}
+                            <i class="fas fa-shield-alt text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'Command' in cert.title %}
+                            <i class="fas fa-terminal text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% elif 'cpp' in cert.title %}
+                            <i class="fas fa-code text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% else %}
+                            <i class="fas fa-certificate text-2xl sm:text-3xl lg:text-5xl opacity-90"></i>
+                        {% endif %}
+                    </div>
+                    <h3 class="text-sm sm:text-base lg:text-lg font-bold leading-tight line-clamp-2">{{ cert.title }}</h3>
                 </div>
-                <!-- PDF Icon Overlay -->
-                <div class="absolute top-4 right-4">
-                    <i class="fas fa-file-pdf text-white text-2xl opacity-80"></i>
+                
+                <!-- Certificate Level Badge -->
+                <div class="absolute top-2 sm:top-3 lg:top-4 right-2 sm:right-3 lg:right-4">
+                    <span class="bg-white bg-opacity-20 text-white text-xs font-bold px-1 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                        {% if 'Advanced' in cert.title %}ADVANCED
+                        {% elif 'Learn' in cert.title %}INTERMEDIATE
+                        {% elif 'Basics' in cert.title %}BEGINNER
+                        {% else %}CERTIFIED{% endif %}
+                    </span>
+                </div>
+                
+                <!-- PDF Icon -->
+                <div class="absolute bottom-2 sm:bottom-3 lg:bottom-4 right-2 sm:right-3 lg:right-4">
+                    <i class="fas fa-file-pdf text-white text-sm sm:text-lg lg:text-xl opacity-80"></i>
                 </div>
             </div>
             
             <!-- Certificate Content -->
-            <div class="p-6">
-                <h3 class="text-xl font-bold text-gray-900 mb-2">{{ cert.title }}</h3>
-                <p class="text-gray-600 mb-4">
-                    <i class="fas fa-building mr-2"></i>
-                    {{ cert.issuer }}
+            <div class="p-3 sm:p-4 lg:p-6">
+                <h3 class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-1 sm:mb-2 line-clamp-2">{{ cert.title }}</h3>
+                <p class="text-gray-600 mb-2 sm:mb-3 text-sm sm:text-base">
+                    <i class="fas fa-building mr-1 sm:mr-2 text-blue-600"></i>
+                    <span class="line-clamp-1">{{ cert.issuer }}</span>
                 </p>
                 
+                {% if cert.description %}
+                <p class="text-gray-700 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed line-clamp-3">{{ cert.description }}</p>
+                {% endif %}
+                
+                <!-- Certificate Skills Tags -->
+                <div class="flex flex-wrap gap-1 sm:gap-2 mb-3 sm:mb-4">
+                    {% if 'JavaScript' in cert.title %}
+                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">ES6+</span>
+                        <span class="bg-orange-100 text-orange-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">DOM</span>
+                    {% elif 'React' in cert.title %}
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Hooks</span>
+                        <span class="bg-cyan-100 text-cyan-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                            <span class="hidden sm:inline">Components</span>
+                            <span class="sm:hidden">JSX</span>
+                        </span>
+                    {% elif 'Node' in cert.title %}
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Runtime</span>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">APIs</span>
+                    {% elif 'TypeScript' in cert.title %}
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Types</span>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                            <span class="hidden sm:inline">Interfaces</span>
+                            <span class="sm:hidden">OOP</span>
+                        </span>
+                    {% elif 'Express' in cert.title %}
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Framework</span>
+                        <span class="bg-slate-100 text-slate-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                            <span class="hidden sm:inline">Middleware</span>
+                            <span class="sm:hidden">API</span>
+                        </span>
+                    {% elif 'Next' in cert.title %}
+                        <span class="bg-black text-white text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">SSR</span>
+                        <span class="bg-gray-800 text-white text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Framework</span>
+                    {% elif 'Frontend' in cert.title %}
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">UI/UX</span>
+                        <span class="bg-pink-100 text-pink-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Responsive</span>
+                    {% elif 'Ethical' in cert.title %}
+                        <span class="bg-red-100 text-red-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                            <span class="hidden sm:inline">Penetration</span>
+                            <span class="sm:hidden">Pen Test</span>
+                        </span>
+                        <span class="bg-rose-100 text-rose-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Security</span>
+                    {% elif 'Command' in cert.title %}
+                        <span class="bg-gray-100 text-gray-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">CLI</span>
+                        <span class="bg-stone-100 text-stone-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Terminal</span>
+                    {% elif 'C++' in cert.title or 'cpp' in cert.title %}
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">OOP</span>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
+                            <span class="hidden sm:inline">Systems Programming</span>
+                            <span class="sm:hidden">Systems</span>
+                        </span>
+                    {% else %}
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">Certified</span>
+                    {% endif %}
+                </div>
+                
                 <!-- Certificate Actions -->
-                <div class="flex space-x-4">
+                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                     <a href="{% if 'http' in cert.file %}{{ cert.file }}{% else %}{% static cert.file %}{% endif %}" 
                        target="_blank"
-                       class="flex-1 bg-blue-600 text-white text-center py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                        <i class="fas fa-eye mr-2"></i>View
+                       class="flex-1 bg-blue-600 text-white text-center py-2 sm:py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
+                        <i class="fas fa-eye mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">View Certificate</span>
+                        <span class="sm:hidden">View</span>
                     </a>
                     <a href="{% if 'http' in cert.file %}{{ cert.file }}{% else %}{% static cert.file %}{% endif %}" 
-                       target="_blank"
-                       class="flex-1 bg-gray-800 text-white text-center py-2 rounded-lg font-semibold hover:bg-gray-900 transition-colors">
-                        <i class="fas fa-download mr-2"></i>Download
+                       download
+                       class="flex-1 bg-gray-800 text-white text-center py-2 sm:py-2.5 rounded-lg font-semibold hover:bg-gray-900 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
+                        <i class="fas fa-download mr-1 sm:mr-2"></i>
+                        <span class="hidden sm:inline">Download</span>
+                        <span class="sm:hidden">Download</span>
                     </a>
                 </div>
             </div>
@@ -55,117 +222,147 @@
     </div>
 
     <!-- Skills Gained Section -->
-    <div class="mb-16 slide-in-left">
-        <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-12">
+    <div class="mb-12 sm:mb-16 slide-in-left px-2 sm:px-4">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center gradient-text mb-8 sm:mb-12">
             Skills & Technologies Learned
         </h2>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <div class="bg-white rounded-lg shadow-md p-6 text-center hover-scale">
-                <i class="fab fa-js-square text-4xl text-yellow-500 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">JavaScript</h3>
-                <p class="text-sm text-gray-600">Advanced Concepts</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 text-center hover-scale">
+                <i class="fab fa-js-square text-2xl sm:text-3xl lg:text-4xl text-yellow-500 mb-2 sm:mb-3 lg:mb-4"></i>
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">JavaScript</h3>
+                <p class="text-xs sm:text-sm text-gray-600">
+                    <span class="hidden sm:inline">Advanced Concepts</span>
+                    <span class="sm:hidden">Advanced</span>
+                </p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-md p-6 text-center hover-scale">
-                <i class="fab fa-react text-4xl text-blue-500 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">React</h3>
-                <p class="text-sm text-gray-600">Advanced Development</p>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 text-center hover-scale">
+                <i class="fab fa-react text-2xl sm:text-3xl lg:text-4xl text-blue-500 mb-2 sm:mb-3 lg:mb-4"></i>
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">React</h3>
+                <p class="text-xs sm:text-sm text-gray-600">
+                    <span class="hidden sm:inline">Advanced Development</span>
+                    <span class="sm:hidden">Advanced</span>
+                </p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-md p-6 text-center hover-scale">
-                <i class="fab fa-node-js text-4xl text-green-500 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Node.js</h3>
-                <p class="text-sm text-gray-600">Backend Development</p>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 text-center hover-scale">
+                <i class="fab fa-node-js text-2xl sm:text-3xl lg:text-4xl text-green-500 mb-2 sm:mb-3 lg:mb-4"></i>
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">Node.js</h3>
+                <p class="text-xs sm:text-sm text-gray-600">
+                    <span class="hidden sm:inline">Backend Development</span>
+                    <span class="sm:hidden">Backend</span>
+                </p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-md p-6 text-center hover-scale">
-                <i class="fas fa-terminal text-4xl text-gray-700 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Command Line</h3>
-                <p class="text-sm text-gray-600">Terminal Basics</p>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 text-center hover-scale">
+                <i class="fas fa-terminal text-2xl sm:text-3xl lg:text-4xl text-gray-700 mb-2 sm:mb-3 lg:mb-4"></i>
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">
+                    <span class="hidden sm:inline">Command Line</span>
+                    <span class="sm:hidden">CLI</span>
+                </h3>
+                <p class="text-xs sm:text-sm text-gray-600">
+                    <span class="hidden sm:inline">Terminal Basics</span>
+                    <span class="sm:hidden">Basics</span>
+                </p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-md p-6 text-center hover-scale">
-                <i class="fab fa-python text-4xl text-blue-600 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Python</h3>
-                <p class="text-sm text-gray-600">Programming</p>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 text-center hover-scale">
+                <i class="fab fa-python text-2xl sm:text-3xl lg:text-4xl text-blue-600 mb-2 sm:mb-3 lg:mb-4"></i>
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">Python</h3>
+                <p class="text-xs sm:text-sm text-gray-600">Programming</p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-md p-6 text-center hover-scale">
-                <i class="fas fa-database text-4xl text-orange-500 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Database</h3>
-                <p class="text-sm text-gray-600">Management</p>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 text-center hover-scale">
+                <i class="fas fa-database text-2xl sm:text-3xl lg:text-4xl text-orange-500 mb-2 sm:mb-3 lg:mb-4"></i>
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">Database</h3>
+                <p class="text-xs sm:text-sm text-gray-600">Management</p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-md p-6 text-center hover-scale">
-                <i class="fas fa-shield-alt text-4xl text-red-500 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Cybersecurity</h3>
-                <p class="text-sm text-gray-600">Ethical Hacking</p>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 text-center hover-scale">
+                <i class="fas fa-shield-alt text-2xl sm:text-3xl lg:text-4xl text-red-500 mb-2 sm:mb-3 lg:mb-4"></i>
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">Cybersecurity</h3>
+                <p class="text-xs sm:text-sm text-gray-600">
+                    <span class="hidden sm:inline">Ethical Hacking</span>
+                    <span class="sm:hidden">Hacking</span>
+                </p>
             </div>
             
-            <div class="bg-white rounded-lg shadow-md p-6 text-center hover-scale">
-                <i class="fas fa-laptop-code text-4xl text-purple-500 mb-4"></i>
-                <h3 class="font-semibold text-gray-900">Frontend</h3>
-                <p class="text-sm text-gray-600">Development</p>
+            <div class="bg-white rounded-lg shadow-md p-3 sm:p-4 lg:p-6 text-center hover-scale">
+                <i class="fas fa-laptop-code text-2xl sm:text-3xl lg:text-4xl text-purple-500 mb-2 sm:mb-3 lg:mb-4"></i>
+                <h3 class="font-semibold text-gray-900 text-sm sm:text-base">Frontend</h3>
+                <p class="text-xs sm:text-sm text-gray-600">Development</p>
             </div>
         </div>
     </div>
 
     <!-- Learning Journey -->
-    <div class="slide-in-right">
-        <h2 class="text-3xl lg:text-4xl font-bold text-center gradient-text mb-12">
+    <div class="slide-in-right px-2 sm:px-4">
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-center gradient-text mb-8 sm:mb-12">
             My Learning Journey
         </h2>
-        <div class="max-w-4xl mx-auto">
+        <div class="max-w-xs sm:max-w-2xl lg:max-w-4xl mx-auto">
             <div class="relative">
-                <!-- Timeline Line -->
-                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 bg-blue-200 h-full"></div>
+                <!-- Timeline Line - Hidden on mobile -->
+                <div class="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-1 bg-blue-200 h-full"></div>
                 
                 <!-- Timeline Items -->
-                <div class="space-y-12">
-                    <div class="flex items-center">
-                        <div class="flex-1 text-right pr-8">
-                            <div class="bg-white rounded-lg shadow-lg p-6">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Frontend Development</h3>
-                                <p class="text-gray-600">Mastered HTML, CSS, JavaScript, and React</p>
-                                <span class="text-sm text-blue-600 font-semibold">2023</span>
+                <div class="space-y-6 sm:space-y-8 lg:space-y-12">
+                    <div class="flex flex-col lg:flex-row lg:items-center">
+                        <div class="flex-1 text-left lg:text-right lg:pr-8">
+                            <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 lg:p-6">
+                                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">Frontend Development</h3>
+                                <p class="text-sm sm:text-base text-gray-600">
+                                    <span class="hidden sm:inline">Mastered HTML, CSS, JavaScript, and React</span>
+                                    <span class="sm:hidden">HTML, CSS, JavaScript, React</span>
+                                </p>
+                                <span class="text-xs sm:text-sm text-blue-600 font-semibold">2023</span>
                             </div>
                         </div>
-                        <div class="w-8 h-8 bg-blue-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="flex-1 pl-8"></div>
+                        <div class="hidden lg:block w-6 lg:w-8 h-6 lg:h-8 bg-blue-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="hidden lg:block flex-1 pl-8"></div>
                     </div>
                     
-                    <div class="flex items-center">
-                        <div class="flex-1 pr-8"></div>
-                        <div class="w-8 h-8 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="flex-1 text-left pl-8">
-                            <div class="bg-white rounded-lg shadow-lg p-6">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Backend Development</h3>
-                                <p class="text-gray-600">Learned Node.js, Express.js, and databases</p>
-                                <span class="text-sm text-green-600 font-semibold">2023</span>
+                    <div class="flex flex-col lg:flex-row lg:items-center">
+                        <div class="hidden lg:block flex-1 pr-8"></div>
+                        <div class="hidden lg:block w-6 lg:w-8 h-6 lg:h-8 bg-green-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="flex-1 text-left lg:pl-8">
+                            <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 lg:p-6">
+                                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">Backend Development</h3>
+                                <p class="text-sm sm:text-base text-gray-600">
+                                    <span class="hidden sm:inline">Learned Node.js, Express.js, and databases</span>
+                                    <span class="sm:hidden">Node.js, Express.js, databases</span>
+                                </p>
+                                <span class="text-xs sm:text-sm text-green-600 font-semibold">2023</span>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="flex items-center">
-                        <div class="flex-1 text-right pr-8">
-                            <div class="bg-white rounded-lg shadow-lg p-6">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Advanced Technologies</h3>
-                                <p class="text-gray-600">TypeScript, Next.js, and advanced React patterns</p>
-                                <span class="text-sm text-purple-600 font-semibold">2024</span>
+                    <div class="flex flex-col lg:flex-row lg:items-center">
+                        <div class="flex-1 text-left lg:text-right lg:pr-8">
+                            <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 lg:p-6">
+                                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">Advanced Technologies</h3>
+                                <p class="text-sm sm:text-base text-gray-600">
+                                    <span class="hidden sm:inline">TypeScript, Next.js, and advanced React patterns</span>
+                                    <span class="sm:hidden">TypeScript, Next.js, React patterns</span>
+                                </p>
+                                <span class="text-xs sm:text-sm text-purple-600 font-semibold">2024</span>
                             </div>
                         </div>
-                        <div class="w-8 h-8 bg-purple-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="flex-1 pl-8"></div>
+                        <div class="hidden lg:block w-6 lg:w-8 h-6 lg:h-8 bg-purple-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="hidden lg:block flex-1 pl-8"></div>
                     </div>
                     
-                    <div class="flex items-center">
-                        <div class="flex-1 pr-8"></div>
-                        <div class="w-8 h-8 bg-red-600 rounded-full border-4 border-white shadow-lg z-10"></div>
-                        <div class="flex-1 text-left pl-8">
-                            <div class="bg-white rounded-lg shadow-lg p-6">
-                                <h3 class="text-xl font-bold text-gray-900 mb-2">Cybersecurity</h3>
-                                <p class="text-gray-600">Ethical hacking and security best practices</p>
-                                <span class="text-sm text-red-600 font-semibold">2024</span>
+                    <div class="flex flex-col lg:flex-row lg:items-center">
+                        <div class="hidden lg:block flex-1 pr-8"></div>
+                        <div class="hidden lg:block w-6 lg:w-8 h-6 lg:h-8 bg-red-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                        <div class="flex-1 text-left lg:pl-8">
+                            <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 lg:p-6">
+                                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">Cybersecurity</h3>
+                                <p class="text-sm sm:text-base text-gray-600">
+                                    <span class="hidden sm:inline">Ethical hacking and security best practices</span>
+                                    <span class="sm:hidden">Ethical hacking, security practices</span>
+                                </p>
+                                <span class="text-xs sm:text-sm text-red-600 font-semibold">2024</span>
                             </div>
                         </div>
                     </div>
@@ -174,25 +371,251 @@
         </div>
     </div>
 
+    
+
+    
+
+    <!-- Skills Progress Bars -->
+    <div class="mt-12 sm:mt-16 px-2 sm:px-4">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">Skill Proficiency</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+            <div class="space-y-4 sm:space-y-6">
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">JavaScript</span>
+                        <span class="text-xs sm:text-sm text-gray-500">Advanced</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        <div class="bg-yellow-500 h-2 sm:h-3 rounded-full skill-bar" data-width="95"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">React.js</span>
+                        <span class="text-xs sm:text-sm text-gray-500">Advanced</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        <div class="bg-blue-500 h-2 sm:h-3 rounded-full skill-bar" data-width="90"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">Node.js</span>
+                        <span class="text-xs sm:text-sm text-gray-500">Intermediate</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        <div class="bg-green-500 h-2 sm:h-3 rounded-full skill-bar" data-width="85"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">TypeScript</span>
+                        <span class="text-xs sm:text-sm text-gray-500">Intermediate</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        <div class="bg-blue-600 h-2 sm:h-3 rounded-full skill-bar" data-width="80"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-4 sm:space-y-6">
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">Express.js</span>
+                        <span class="text-xs sm:text-sm text-gray-500">Intermediate</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        <div class="bg-gray-700 h-2 sm:h-3 rounded-full skill-bar" data-width="82"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">Next.js</span>
+                        <span class="text-xs sm:text-sm text-gray-500">Intermediate</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        <div class="bg-black h-2 sm:h-3 rounded-full skill-bar" data-width="78"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">
+                            <span class="hidden sm:inline">Frontend Development</span>
+                            <span class="sm:hidden">Frontend</span>
+                        </span>
+                        <span class="text-xs sm:text-sm text-gray-500">Advanced</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        <div class="bg-purple-500 h-2 sm:h-3 rounded-full skill-bar" data-width="92"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <span class="text-base sm:text-lg font-semibold text-gray-700">Cybersecurity</span>
+                        <span class="text-xs sm:text-sm text-gray-500">Beginner</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2 sm:h-3">
+                        <div class="bg-red-500 h-2 sm:h-3 rounded-full skill-bar" data-width="70"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Call to Action -->
-    <div class="text-center mt-16 fade-in">
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-8 text-white">
-            <h2 class="text-3xl font-bold mb-4">Continuous Learning</h2>
-            <p class="text-xl mb-6">
-                I believe in continuous learning and staying updated with the latest technologies. 
-                Always exploring new courses and certifications!
+    <div class="text-center mt-12 sm:mt-16 fade-in px-2 sm:px-4">
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 sm:p-8 text-white">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Continuous Learning</h2>
+            <p class="text-base sm:text-xl mb-4 sm:mb-6">
+                <span class="hidden sm:inline">
+                    I believe in continuous learning and staying updated with the latest technologies. 
+                    Always exploring new courses and certifications!
+                </span>
+                <span class="sm:hidden">
+                    Always learning new technologies and earning certifications!
+                </span>
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                 <a href="{% url 'main:contact' %}" 
-                   class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                    Let's Connect
+                   class="bg-white text-blue-600 px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-sm sm:text-base">
+                    <span class="hidden sm:inline">Let's Connect</span>
+                    <span class="sm:hidden">Connect</span>
                 </a>
                 <a href="{% url 'main:projects' %}" 
-                   class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors">
-                    View My Projects
+                   class="border-2 border-white text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors text-sm sm:text-base">
+                    <span class="hidden sm:inline">View My Projects</span>
+                    <span class="sm:hidden">Projects</span>
                 </a>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+// Filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const certificateCards = document.querySelectorAll('.certificate-card');
+    
+    // Count certificates by category
+    function updateStats() {
+        const frontendCount = document.querySelectorAll('.certificate-card.frontend').length;
+        const backendCount = document.querySelectorAll('.certificate-card.backend').length;
+        const securityCount = document.querySelectorAll('.certificate-card.security, .certificate-card.programming').length;
+        
+        document.querySelector('#frontend-count .text-4xl').textContent = frontendCount;
+        document.querySelector('#backend-count .text-4xl').textContent = backendCount;
+        document.querySelector('#security-count .text-4xl').textContent = securityCount;
+    }
+    
+    // Filter certificates
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Update active button - Fixed for responsive design
+            filterButtons.forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            button.classList.remove('bg-gray-200', 'text-gray-700');
+            button.classList.add('bg-blue-600', 'text-white');
+            
+            const category = button.getAttribute('data-filter');
+            
+            // Show/hide certificates with responsive animation
+            certificateCards.forEach(card => {
+                if (category === 'all' || card.classList.contains(category)) {
+                    card.style.display = 'block';
+                    card.style.animation = 'fadeIn 0.5s ease-in-out';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Animate skill bars
+    const skillBars = document.querySelectorAll('.skill-bar');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const bar = entry.target;
+                const width = bar.getAttribute('data-width');
+                setTimeout(() => {
+                    bar.style.width = width + '%';
+                }, 200);
+            }
+        });
+    });
+    
+    skillBars.forEach(bar => {
+        bar.style.width = '0%';
+        bar.style.transition = 'width 1.5s ease-in-out';
+        observer.observe(bar);
+    });
+    
+    // Initialize stats
+    updateStats();
+});
+
+// Add fadeIn animation and responsive utilities
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .certificate-card {
+        transition: all 0.3s ease;
+    }
+    
+    /* Responsive text truncation */
+    .line-clamp-1 {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    /* Enhanced hover effects for touch devices */
+    @media (hover: hover) {
+        .hover-scale:hover {
+            transform: scale(1.02);
+        }
+        
+        .certificate-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) {
+        .certificate-card:active {
+            transform: scale(0.98);
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
 {% endblock %}

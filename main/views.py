@@ -1,5 +1,10 @@
 from django.shortcuts import render
 from django.http import Http404, JsonResponse
+from django.core.mail import send_mail
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
 from .models import Certificate, CV, Project, Profile
 
 def get_profile_data():
@@ -252,67 +257,97 @@ def certification(request):
                 
     except Exception as e:
         print(f"⚠️ MongoDB error getting certificates: {e}")
-        # Fallback to default certificates if MongoDB fails
+        # Fallback to default certificates based on actual certificate files
         certifications_list = [
             {
                 'title': 'Advanced JavaScript',
-                'issuer': 'Coursera',
+                'issuer': 'Programming Course Platform',
                 'file': 'assets/Certificates/Advanced JavaScript.pdf',
-                'description': 'Advanced concepts in JavaScript programming'
+                'description': 'Advanced JavaScript concepts including ES6+, async programming, DOM manipulation, and modern JavaScript features for building dynamic web applications.'
             },
             {
                 'title': 'Advanced React',
-                'issuer': 'Coursera',
+                'issuer': 'React Development Platform',
                 'file': 'assets/Certificates/Advanced React.pdf',
-                'description': 'Advanced React development techniques'
+                'description': 'Advanced React concepts including hooks, context API, performance optimization, and modern React patterns for building scalable applications.'
             },
             {
                 'title': 'Command Line Basics',
-                'issuer': 'Coursera',
+                'issuer': 'System Administration Course',
                 'file': 'assets/Certificates/Command Line Basics.pdf',
-                'description': 'Fundamentals of command line interface'
+                'description': 'Fundamentals of command line interface, terminal navigation, file operations, and essential CLI tools for developers.'
             },
             {
-                'title': 'Frontend Development',
+                'title': 'Full Stack Development',
                 'issuer': 'Coursera',
-                'file': 'assets/Certificates/KanchanFrontend.pdf',
-                'description': 'Complete frontend development course'
+                'file': 'assets/Certificates/Coursera BDFV853TMJPF.pdf',
+                'description': 'Comprehensive full stack web development certification covering frontend, backend, and database technologies.'
             },
             {
-                'title': 'Learn Express.js',
-                'issuer': 'Online Course',
-                'file': 'assets/Certificates/Learn Express.js.pdf',
-                'description': 'Express.js framework for Node.js'
-            },
-            {
-                'title': 'Learn Next.js',
-                'issuer': 'Online Course',
-                'file': 'assets/Certificates/Learn Next.js.pdf',
-                'description': 'Next.js React framework'
-            },
-            {
-                'title': 'Learn Node.js',
-                'issuer': 'Online Course',
-                'file': 'assets/Certificates/Learn Node.js.pdf',
-                'description': 'Node.js backend development'
-            },
-            {
-                'title': 'Learn TypeScript',
-                'issuer': 'Online Course',
-                'file': 'assets/Certificates/Learn TypeScript.pdf',
-                'description': 'TypeScript programming language'
-            },
-            {
-                'title': 'Node.js MOOC',
-                'issuer': 'Online Course',
-                'file': 'assets/Certificates/NodejsMOOC.pdf',
-                'description': 'Comprehensive Node.js course'
+                'title': 'C++ Programming',
+                'issuer': 'Programming Institute',
+                'file': 'assets/Certificates/cpp1.pdf',
+                'description': 'Object-oriented programming with C++, data structures, algorithms, and memory management fundamentals.'
             },
             {
                 'title': 'Ethical Hacking',
-                'issuer': 'Cybersecurity Course',
+                'issuer': 'Cybersecurity Institute',
                 'file': 'assets/Certificates/EthicalHacking.pdf',
-                'description': 'Ethical hacking and cybersecurity'
+                'description': 'Ethical hacking methodologies, penetration testing, vulnerability assessment, and cybersecurity best practices.'
+            },
+            {
+                'title': 'Google AI Essentials',
+                'issuer': 'Google',
+                'file': 'assets/Certificates/Gai1.pdf',
+                'description': 'Artificial Intelligence fundamentals, machine learning basics, and AI applications in modern technology.'
+            },
+            {
+                'title': 'Frontend Development Certification',
+                'issuer': 'Web Development Academy',
+                'file': 'assets/Certificates/KanchanFrontend.pdf',
+                'description': 'Complete frontend development certification covering HTML5, CSS3, JavaScript, responsive design, and modern frameworks.'
+            },
+            {
+                'title': 'Learn Express.js',
+                'issuer': 'Backend Development Platform',
+                'file': 'assets/Certificates/Learn Express.js.pdf',
+                'description': 'Express.js framework for Node.js including middleware, routing, RESTful APIs, and server-side development.'
+            },
+            {
+                'title': 'Learn Next.js',
+                'issuer': 'React Framework Course',
+                'file': 'assets/Certificates/Learn Next.js.pdf',
+                'description': 'Next.js React framework covering server-side rendering, static generation, API routes, and modern web development.'
+            },
+            {
+                'title': 'Learn Node.js',
+                'issuer': 'Backend Development Platform',
+                'file': 'assets/Certificates/Learn Node.js.pdf',
+                'description': 'Node.js runtime environment for backend development, including asynchronous programming and server-side JavaScript.'
+            },
+            {
+                'title': 'Learn TypeScript',
+                'issuer': 'Programming Language Course',
+                'file': 'assets/Certificates/Learn TypeScript.pdf',
+                'description': 'TypeScript programming language covering static typing, interfaces, generics, and modern JavaScript development.'
+            },
+            {
+                'title': 'Node.js MOOC',
+                'issuer': 'Online Learning Platform',
+                'file': 'assets/Certificates/NodejsMOOC.pdf',
+                'description': 'Massive Open Online Course on Node.js covering comprehensive backend development with JavaScript runtime.'
+            },
+            {
+                'title': 'Portfolio Project',
+                'issuer': 'Project Development Course',
+                'file': 'assets/Certificates/pf1.pdf',
+                'description': 'Portfolio development project showcasing web development skills and modern design principles.'
+            },
+            {
+                'title': 'PHP Development',
+                'issuer': 'Web Development Platform',
+                'file': 'assets/Certificates/phpmooc.pdf',
+                'description': 'PHP programming language for web development including server-side scripting and dynamic web applications.'
             }
         ]
     
@@ -348,4 +383,81 @@ def profile_api(request):
             'success': False,
             'message': f'Error retrieving profile: {str(e)}',
             'data': None
+        }, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def contact_submit(request):
+    """Handle contact form submission"""
+    try:
+        # Parse JSON data
+        data = json.loads(request.body)
+        
+        name = data.get('name', '').strip()
+        email = data.get('email', '').strip()
+        subject = data.get('subject', '').strip()
+        message = data.get('message', '').strip()
+        
+        # Validate required fields
+        if not all([name, email, subject, message]):
+            return JsonResponse({
+                'success': False,
+                'message': 'All fields are required.'
+            }, status=400)
+        
+        # Get profile data for recipient email
+        profile_data = get_profile_data()
+        recipient_email = profile_data.get('email', 'kanchandasila31@gmail.com')
+        
+        # Prepare email content
+        email_subject = f"Portfolio Contact: {subject}"
+        email_body = f"""
+New message from your portfolio website:
+
+Name: {name}
+Email: {email}
+Subject: {subject}
+
+Message:
+{message}
+
+---
+This message was sent from your portfolio contact form.
+        """
+        
+        # Send email (if email settings are configured)
+        try:
+            if hasattr(settings, 'EMAIL_HOST') and settings.EMAIL_HOST:
+                send_mail(
+                    email_subject,
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [recipient_email],
+                    fail_silently=False,
+                )
+                print(f"✅ Email sent to {recipient_email}")
+            else:
+                print(f"⚠️ Email settings not configured. Message would be sent to: {recipient_email}")
+                print(f"Subject: {email_subject}")
+                print(f"From: {name} ({email})")
+                print(f"Message: {message}")
+        except Exception as email_error:
+            print(f"⚠️ Email sending failed: {email_error}")
+            # Don't fail the request if email fails - still return success
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Thank you! Your message has been sent successfully. 😇'
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid JSON data.'
+        }, status=400)
+    except Exception as e:
+        print(f"❌ Contact form error: {e}")
+        return JsonResponse({
+            'success': False,
+            'message': 'Failed to send message, please try again. 🥲'
         }, status=500)

@@ -11,4 +11,5 @@ urlpatterns = [
     path('mywork/', views.mywork, name='mywork'),
     path('certification/', views.certification, name='certification'),
     path('api/profile/', views.profile_api, name='profile_api'),
+    path('api/contact/', views.contact_submit, name='contact_submit'),
 ]
