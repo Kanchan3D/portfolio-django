@@ -98,8 +98,12 @@
     <div class="flex flex-col items-center justify-center relative slide-in-right order-1 sm:mt-0 lg:order-2 lg:ml-6 xl:ml-10">
         <div class="image-container relative">
             <img id="profile-image" 
+                 {% if profile.profile_photo_url %}
+                 src="{{ profile.profile_photo_url }}" 
+                 {% else %}
                  src="{% static 'assets/icons/pf2.png' %}" 
-                 alt="Kanchan Dasila"
+                 {% endif %}
+                 alt="{{ profile.name }}"
                  class="rounded-full w-48 h-48 sm:mt-0 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 xl:w-[28rem] xl:h-[28rem] shadow-lg object-cover transition-transform duration-500 hover-scale">
         </div>
     </div>
@@ -283,8 +287,13 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const profileImage = document.getElementById('profile-image');
+        {% if profile.profile_photo_url %}
+        const defaultSrc = "{{ profile.profile_photo_url }}";
+        const hoverSrc = "{{ profile.profile_photo_url }}"; // You can add a different hover image URL to the profile model if needed
+        {% else %}
         const defaultSrc = "{% static 'assets/icons/pf2.png' %}";
         const hoverSrc = "{% static 'assets/icons/pft1.jpg' %}";
+        {% endif %}
         
         // Enhanced image switching with touch support
         function switchToHoverImage() {
