@@ -5,3 +5,4 @@ mongoengine==0.29.1
 pymongo==3.11.4
 dnspython==2.7.0
 python-dotenv==1.1.1
+whitenoise==6.8.2

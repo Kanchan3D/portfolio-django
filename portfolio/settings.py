@@ -50,12 +50,21 @@ else:
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-p0xv319in$w7s7he2i^q2bzf_f2e@q5il1e#nb2h&2tu$c$n@a'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-p0xv319in$w7s7he2i^q2bzf_f2e@q5il1e#nb2h&2tu$c$n@a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.onrender.com',  # Allow all onrender.com subdomains
+]
+
+# Add additional allowed hosts from environment variable
+ADDITIONAL_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+if ADDITIONAL_HOSTS and ADDITIONAL_HOSTS[0]:
+    ALLOWED_HOSTS.extend([host.strip() for host in ADDITIONAL_HOSTS if host.strip()])
 
 
 # Application definition
@@ -72,6 +81,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add whitenoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -148,6 +158,12 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "main" / "static",
 ]
+
+# Production static files settings
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Whitenoise settings for static files compression
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
