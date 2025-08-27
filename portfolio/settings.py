@@ -165,6 +165,12 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Whitenoise settings for static files compression
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
+# CSRF trusted origins
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.kanchan.live',
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
