@@ -97,12 +97,8 @@
     <!-- Right Section - Profile Image with Flip Effect -->
     <div class="flex flex-col items-center justify-center relative slide-in-right order-1 sm:mt-0 lg:order-2 lg:ml-6 xl:ml-10">
         <div class="image-container relative">
-            <img id="profile-image" 
-                 {% if profile.profile_photo_url %}
-                 src="{{ profile.profile_photo_url }}" 
-                 {% else %}
-                 src="{% static 'assets/icons/pf2.png' %}" 
-                 {% endif %}
+            <img id="profile-image"
+                 src="{{ profile.profile_photo_url }}"
                  alt="{{ profile.name }}"
                  class="rounded-full w-48 h-48 sm:mt-0 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-72 lg:h-72 xl:w-[28rem] xl:h-[28rem] shadow-lg object-cover transition-transform duration-500 hover-scale">
         </div>
@@ -286,60 +282,7 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const profileImage = document.getElementById('profile-image');
-        {% if profile.profile_photo_url %}
-        const defaultSrc = "{{ profile.profile_photo_url }}";
-        const hoverSrc = "{{ profile.profile_photo_url }}"; // You can add a different hover image URL to the profile model if needed
-        {% else %}
-        const defaultSrc = "{% static 'assets/icons/pf2.png' %}";
-        const hoverSrc = "{% static 'assets/icons/pft1.jpg' %}";
-        {% endif %}
-        
-        // Enhanced image switching with touch support
-        function switchToHoverImage() {
-            profileImage.src = hoverSrc;
-        }
-        
-        function switchToDefaultImage() {
-            profileImage.src = defaultSrc;
-        }
-        
-        // Mouse events for desktop
-        profileImage.addEventListener('mouseover', switchToHoverImage);
-        profileImage.addEventListener('mouseout', switchToDefaultImage);
-        
-        // Touch events for mobile devices
-        profileImage.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            switchToHoverImage();
-            // Auto-revert after 2 seconds on touch devices
-            setTimeout(switchToDefaultImage, 2000);
-        });
-        
-        // Handle orientation changes and resize for responsive layout
-        function handleResize() {
-            // Add any responsive JavaScript logic here if needed
-            const screenWidth = window.innerWidth;
-            
-            // Example: Adjust animations based on screen size
-            if (screenWidth < 640) {
-                // Mobile optimizations
-                profileImage.style.animationDuration = '0.3s';
-            } else {
-                // Desktop behavior
-                profileImage.style.animationDuration = '0.5s';
-            }
-        }
-        
-        window.addEventListener('resize', handleResize);
-        window.addEventListener('orientationchange', handleResize);
-        
-        // Initial call
-        handleResize();
-        
-        // Preload hover image for better performance
-        const hoverImage = new Image();
-        hoverImage.src = hoverSrc;
+        // No hover image logic since only MongoDB image is used
     });
 </script>
 {% endblock %}
