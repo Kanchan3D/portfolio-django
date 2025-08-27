@@ -42,17 +42,16 @@ def get_profile_data():
         'is_available_for_work': profile.is_available_for_work if profile else True,
     }
 
+def get_resume_url():
+    profile = Profile.objects.first()
+    if profile and profile.resume_url:
+        return profile.resume_url
+    return "https://drive.google.com/file/d/1yzdrXJG6MOCjmjz1-GzCCpPxSefCiVT3/view"
+
 def home(request):
     # Get profile data with fallbacks
     profile_data = get_profile_data()
-    
-    # Get CV URL
-    try:
-        active_cv = CV.objects(is_current=True).first()
-        cv_url = active_cv.pdf_url if active_cv else (profile_data['resume_url'] if profile_data['resume_url'] else "https://drive.google.com/file/d/1yzdrXJG6MOCjmjz1-GzCCpPxSefCiVT3/view")
-    except Exception as e:
-        print(f"⚠️ MongoDB error getting CV: {e}")
-        cv_url = "https://drive.google.com/file/d/1yzdrXJG6MOCjmjz1-GzCCpPxSefCiVT3/view"
+    cv_url = get_resume_url()
     
     context = {
         'title': f'Home - {profile_data["name"]} Portfolio',
@@ -113,6 +112,10 @@ def about(request):
     return render(request, 'main/about.html', context)
 
 def projects(request):
+    # Get profile data with fallbacks
+    profile_data = get_profile_data()
+    cv_url = get_resume_url()
+    
     # Get projects from MongoDB only
     try:
         mongo_projects = Project.objects(is_featured=True)
@@ -122,7 +125,7 @@ def projects(request):
             projects_list.append({
                 'title': project.title,
                 'description': project.description,
-                'image': project.image_url or 'assets/project/default.jpg',
+                'image': project.image_url or '',
                 'technologies': project.get_technologies_list(),
                 'github': project.github_url or '#',
                 'live': project.live_url or '#'
@@ -135,7 +138,7 @@ def projects(request):
                 projects_list.append({
                     'title': project.title,
                     'description': project.description,
-                    'image': project.image_url or 'assets/project/default.jpg',
+                    'image': project.image_url or '',
                     'technologies': project.get_technologies_list(),
                     'github': project.github_url or '#',
                     'live': project.live_url or '#'
@@ -143,66 +146,14 @@ def projects(request):
                 
     except Exception as e:
         print(f"⚠️ MongoDB error getting projects: {e}")
-        # Fallback to default projects if MongoDB fails
-        projects_list = [
-            {
-                'title': 'E-Commerce Platform',
-                'description': 'Full-stack e-commerce application with React, Node.js, and MongoDB',
-                'image': 'assets/project/ecom.jpg',
-                'technologies': ['React', 'Node.js', 'MongoDB', 'Express'],
-                'github': '#',
-                'live': '#'
-            },
-            {
-                'title': 'Blogging Platform',
-                'description': 'A modern blogging platform with user authentication and content management',
-                'image': 'assets/project/blogging.jpg',
-                'technologies': ['React', 'Django', 'PostgreSQL'],
-                'github': '#',
-                'live': '#'
-            },
-            {
-                'title': 'URL Shortener',
-                'description': 'URL shortening service with analytics and custom domains',
-                'image': 'assets/project/url-shortener.jpg',
-                'technologies': ['Node.js', 'Express', 'MongoDB'],
-                'github': '#',
-                'live': '#'
-            },
-            {
-                'title': 'LeetMetric',
-                'description': 'LeetCode problem tracking and analytics dashboard',
-                'image': 'assets/project/leetmetric.png',
-                'technologies': ['React', 'API Integration', 'Charts.js'],
-                'github': '#',
-                'live': '#'
-            },
-            {
-                'title': 'Learning Management System',
-                'description': 'Complete LMS with course management and student tracking',
-                'image': 'assets/project/lms.png',
-                'technologies': ['React', 'Node.js', 'MySQL'],
-                'github': '#',
-                'live': '#'
-            },
-            {
-                'title': 'Voting System',
-                'description': 'Secure digital voting system with blockchain technology',
-                'image': 'assets/project/Voting.jpg',
-                'technologies': ['React', 'Blockchain', 'Web3'],
-                'github': '#',
-                'live': '#'
-            }
-        ]
-    
-    # Get profile data with fallbacks
-    profile_data = get_profile_data()
+        projects_list = []
     
     context = {
         'title': f'Projects - {profile_data["name"]} Portfolio',
         'page': 'projects',
-        'projects': projects_list,
-        'profile': profile_data
+        'cv_url': cv_url,
+        'profile': profile_data,
+        'projects': projects_list
     }
     return render(request, 'main/projects.html', context)
 
