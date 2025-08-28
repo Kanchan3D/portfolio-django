@@ -58,7 +58,9 @@ DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '.onrender.com',  # Allow all onrender.com subdomains
+    'portfolio-django-3ua0.onrender.com',
+    '.onrender.com',
+    '.kanchan.live',
 ]
 
 # Add additional allowed hosts from environment variable
