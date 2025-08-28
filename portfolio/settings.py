@@ -167,6 +167,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = [
+    'https://portfolio-django-3ua0.onrender.com',
     'https://*.onrender.com',
     'https://*.kanchan.live',
 ]
