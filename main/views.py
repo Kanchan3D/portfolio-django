@@ -412,3 +412,13 @@ This message was sent from your portfolio contact form.
             'success': False,
             'message': 'Failed to send message, please try again. 🥲'
         }, status=500)
+
+
+def custom_404_view(request, exception=None):
+    """Custom 404 error handler"""
+    profile = get_profile_data()
+    return render(request, 'main/404.html', {
+        'profile': profile,
+        'page': '404',
+        'title': '404 - Page Not Found'
+    }, status=404)

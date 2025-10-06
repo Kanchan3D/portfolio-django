@@ -1,0 +1,135 @@
+<!-- Deployment Notice Popup -->
+<div id="deployment-notice" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center px-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 transform transition-all animate-popup">
+        <!-- Header with gradient -->
+        <div class="bg-gradient-to-r from-blue-500 to-purple-500 rounded-t-2xl p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-info-circle text-3xl"></i>
+                    <h3 class="text-2xl font-bold">Deployment Notice</h3>
+                </div>
+                <button onclick="closeNotice()" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="p-6 space-y-4">
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-server text-blue-500 text-xl mt-1"></i>
+                <p class="text-gray-700 leading-relaxed">
+                    <strong>Hey there! 👋</strong> Just a heads up - this portfolio is currently deployed on 
+                    <span class="text-purple-600 font-semibold">PythonAnywhere</span>.
+                </p>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-database text-yellow-500 text-xl mt-1"></i>
+                <p class="text-gray-700 leading-relaxed">
+                    Due to platform restrictions, the <span class="font-semibold">dynamic MongoDB data</span> 
+                    (like profile images and project details) might not be fully visible here.
+                </p>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-check-circle text-green-500 text-xl mt-1"></i>
+                <p class="text-gray-700 leading-relaxed">
+                    But don't worry! Everything is working perfectly in the 
+                    <span class="font-semibold">development environment</span> and other deployment platforms. 
+                    This is just a hosting limitation! 🚀
+                </p>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-external-link-alt text-purple-500 text-xl mt-1"></i>
+                <p class="text-gray-700 leading-relaxed">
+                    Want to see my <span class="font-semibold">fully functional MERN stack portfolio</span>? 
+                    Check it out at 
+                    <a href="https://kanchan.live" target="_blank" rel="noopener noreferrer" 
+                       class="text-blue-600 font-semibold hover:text-purple-600 transition-colors underline">
+                        kanchan.live
+                    </a> 
+                    🌟
+                </p>
+            </div>
+            
+            <!-- Signature -->
+            <div class="pt-4 border-t border-gray-200">
+                <p class="text-right text-gray-600 italic">
+                    ~ Kanchan ✨
+                </p>
+            </div>
+        </div>
+        
+        <!-- Footer with action button -->
+        <div class="bg-gray-50 rounded-b-2xl p-4">
+            <button onclick="closeNotice()" 
+                    class="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold py-3 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105">
+                Got it, thanks! 👍
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Popup Styles -->
+<style>
+    /* Popup Animation */
+    @keyframes popup {
+        0% {
+            opacity: 0;
+            transform: scale(0.8) translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    
+    .animate-popup {
+        animation: popup 0.4s ease-out;
+    }
+    
+    /* Fade out animation */
+    @keyframes fadeOut {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+    
+    .fade-out {
+        animation: fadeOut 0.3s ease-out forwards;
+    }
+</style>
+
+<!-- Popup JavaScript -->
+<script>
+    // Close the deployment notice popup
+    function closeNotice() {
+        const notice = document.getElementById('deployment-notice');
+        notice.classList.add('fade-out');
+        setTimeout(() => {
+            notice.style.display = 'none';
+            // Store in localStorage so it doesn't show again in this session
+            localStorage.setItem('noticeShown', 'true');
+        }, 300);
+    }
+    
+    // Check if notice was already shown in this session
+    window.addEventListener('DOMContentLoaded', function() {
+        const noticeShown = localStorage.getItem('noticeShown');
+        if (noticeShown === 'true') {
+            document.getElementById('deployment-notice').style.display = 'none';
+        }
+    });
+    
+    // Allow closing with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeNotice();
+        }
+    });
+</script>

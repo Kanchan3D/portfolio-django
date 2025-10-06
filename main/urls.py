@@ -12,4 +12,6 @@ urlpatterns = [
     path('certification/', views.certification, name='certification'),
     path('api/profile/', views.profile_api, name='profile_api'),
     path('api/contact/', views.contact_submit, name='contact_submit'),
+    # Test route to preview 404 page in development
+    path('test-404/', views.custom_404_view, name='test_404'),
 ]

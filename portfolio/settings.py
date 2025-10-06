@@ -15,11 +15,12 @@ from pathlib import Path
 import mongoengine
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Load environment variables
+load_dotenv(BASE_DIR / '.env')
+
 
 # MongoDB Atlas Configuration
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'your_password_here')
